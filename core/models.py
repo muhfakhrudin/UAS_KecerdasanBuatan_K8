@@ -10,6 +10,21 @@ class IphoneListing(models.Model):
         ('unknown', 'Unknown'),
     ]
 
+    VARIAN_MODEL_CHOICES = [
+        ('reguler', 'Reguler'),
+        ('mini', 'Mini'),
+        ('plus', 'Plus'),
+        ('pro', 'Pro'),
+        ('pro_max', 'Pro Max'),
+    ]
+
+    GARANSI_CHOICES = [
+        ('resmi', 'Resmi'),
+        ('inter', 'Inter'),
+        ('beacukai', 'Beacukai'),
+        ('tidak_ada', 'Tidak Ada'),
+    ]
+
     # Data asli dari CSV
     platform = models.CharField(max_length=50)
     nama_toko = models.CharField(max_length=200)
@@ -30,6 +45,8 @@ class IphoneListing(models.Model):
     generasi = models.IntegerField()
     is_pro = models.BooleanField(default=False)
     penyimpanan_gb = models.IntegerField(default=128)
+    varian_model = models.CharField(max_length=20, choices=VARIAN_MODEL_CHOICES, default='reguler')
+    garansi = models.CharField(max_length=20, choices=GARANSI_CHOICES, default='tidak_ada')
 
     # Teks gabungan untuk BM25 indexing
     dokumen_teks = models.TextField()

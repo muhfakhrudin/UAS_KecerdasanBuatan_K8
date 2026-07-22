@@ -7,7 +7,7 @@
 
   <div class="mb-10">
     <p class="text-accent font-semibold text-sm uppercase tracking-wide mb-2">Hasil Rekomendasi</p>
-    <h1 class="text-3xl font-extrabold text-slate-900 mb-3">"{{ query }}"</h1>
+    <h1 class="text-3xl font-extrabold text-slate-900 mb-3">3 iPhone Terbaik Untukmu</h1>
     <div class="flex flex-wrap gap-2 text-sm">
       {% for label, value in summary.items %}
       <span class="bg-white border border-slate-200 rounded-full px-4 py-1.5 text-slate-600">
@@ -16,6 +16,13 @@
       {% endfor %}
     </div>
   </div>
+
+  {% if relaxed %}
+  <div class="bg-amber-50 border border-amber-200 text-amber-700 text-sm rounded-xl px-4 py-3 mb-8">
+    Tidak ada produk yang memenuhi semua kriteria kamu. Kami merelaksasi filter kondisi dan
+    garansi untuk menampilkan hasil terdekat.
+  </div>
+  {% endif %}
 
   {% if recommendations %}
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -50,6 +57,10 @@
         <div class="flex justify-between items-center">
           <span class="text-slate-500">Kondisi</span>
           <span class="font-semibold text-slate-800 capitalize">{{ rec.listing.kondisi|cut:"_" }}</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-slate-500">Garansi</span>
+          <span class="font-semibold text-slate-800">{{ rec.listing.get_garansi_display }}</span>
         </div>
         <div class="flex justify-between items-center">
           <span class="text-slate-500">Rating &amp; Terjual</span>

@@ -13,6 +13,13 @@ KONDISI_MAP = {
     'bekas': ['minus', 'cacat', 'retak', 'pecah'],
 }
 
+GARANSI_MAP = {
+    'resmi': ['ibox', 'resmi', 'garansi resmi', 'official'],
+    'inter': ['inter', 'international', 'garansi inter'],
+    'beacukai': ['beacukai', 'bea cukai', ' bc '],
+    'tidak_ada': ['no garansi', 'tanpa garansi', 'as is'],
+}
+
 STOPWORDS_ID = {'yang', 'dan', 'di', 'ke', 'dari', 'untuk', 'ini', 'itu'}
 
 
@@ -50,6 +57,28 @@ def extract_kondisi(varian, link):
     return 'unknown'
 
 
+def extract_varian_model(kategori_varian):
+    label = str(kategori_varian).lower()
+    if 'pro max' in label:
+        return 'pro_max'
+    if 'pro' in label:
+        return 'pro'
+    if 'mini' in label:
+        return 'mini'
+    if 'plus' in label:
+        return 'plus'
+    return 'reguler'
+
+
+def extract_garansi(varian, link):
+    haystack = f'{varian} {link}'.lower()
+    for garansi, keywords in GARANSI_MAP.items():
+        for kw in keywords:
+            if kw in haystack:
+                return garansi
+    return 'tidak_ada'
+
+
 class Command(BaseCommand):
     help = 'Load dan preprocessing data listing iPhone dari file CSV ke database.'
 
@@ -83,6 +112,13 @@ class Command(BaseCommand):
 
         df['kondisi'] = df.apply(
             lambda row: extract_kondisi(row['Kategori Varian'], row['Link Pembelian']),
+            axis=1,
+        )
+
+        df['varian_model'] = df['Kategori Varian'].apply(extract_varian_model)
+
+        df['garansi'] = df.apply(
+            lambda row: extract_garansi(row['Kategori Varian'], row['Link Pembelian']),
             axis=1,
         )
 
@@ -149,6 +185,8 @@ class Command(BaseCommand):
                 generasi=row['generasi'],
                 is_pro=row['is_pro'],
                 penyimpanan_gb=row['penyimpanan_gb'],
+                varian_model=row['varian_model'],
+                garansi=row['garansi'],
                 dokumen_teks=row['dokumen_teks'],
                 trust_score=row['trust_score'],
             )

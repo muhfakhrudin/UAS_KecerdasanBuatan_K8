@@ -3,7 +3,14 @@ Deteksi intent user dari query awal menggunakan TF-IDF.
 Mengembalikan: mode ('spec_first' atau 'budget_first') + sinyal per dimensi
 """
 
+import re
+
 from .tfidf_engine import compute_similarity
+
+PRICE_CEILING_PATTERN = re.compile(
+    r'(?:di\s*bawah|dibawah|kurang\s*dari|maksimal|maks\b|max\b|budget|sekitar)'
+    r'\s*(?:rp\.?\s*)?(\d+(?:[.,]\d+)?)\s*(jut\w*|jt\b|rib\w*|rb\b)?'
+)
 
 PRICE_TOKENS = ['murah', 'harga', 'budget', 'hemat', 'terjangkau', 'ekonomis', 'jutaan', 'ribu']
 CAMERA_TOKENS = ['kamera', 'foto', 'portrait', 'video', 'fotografi', 'kualitas gambar', 'megapixel']
@@ -41,3 +48,28 @@ def detect_intent(query: str) -> dict:
     mode = 'budget_first' if is_price_dominant else 'spec_first'
 
     return {'mode': mode, 'signals': signals}
+
+
+def extract_price_ceiling(query: str):
+    """
+    Ekstrak batas harga maksimum dari teks bebas, mis. "dibawah 4 jutaan",
+    "maksimal 4jt", "budget 500 ribu". Return int rupiah, atau None jika
+    tidak ada pola harga yang terdeteksi.
+    """
+    query_clean = (query or '').lower()
+    match = PRICE_CEILING_PATTERN.search(query_clean)
+    if not match:
+        return None
+
+    number = float(match.group(1).replace(',', '.'))
+    unit = match.group(2) or ''
+
+    if unit.startswith('jut') or unit == 'jt':
+        return int(number * 1_000_000)
+    if unit.startswith('rib') or unit == 'rb':
+        return int(number * 1_000)
+    # Tanpa satuan eksplisit: angka kecil diasumsikan "juta" (kebiasaan user
+    # marketplace, mis. "dibawah 4" -> 4 juta), angka besar dianggap rupiah utuh.
+    if number < 1000:
+        return int(number * 1_000_000)
+    return int(number)

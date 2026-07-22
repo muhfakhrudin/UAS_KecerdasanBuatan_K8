@@ -1,18 +1,25 @@
 {% extends 'base.html' %}
 
-{% block title %}SmartPick — Step {{ step }} dari {{ total_steps }}{% endblock %}
+{% block title %}SmartPick — Langkah {{ step }} dari {{ total_steps }}{% endblock %}
 
 {% block content %}
 <section class="max-w-3xl mx-auto px-6 py-14">
 
   <div class="mb-10">
-    <div class="flex justify-between text-xs font-medium text-slate-400 mb-2">
-      <span>Step {{ step }} dari {{ total_steps }}</span>
-      <span>{{ query }}</span>
+    <div class="hidden sm:flex justify-between text-xs font-medium text-slate-400 mb-2">
+      <span>Seri</span>
+      <span>Varian</span>
+      <span>Budget</span>
+      <span>Storage</span>
+      <span>Baterai</span>
+      <span>Kondisi</span>
+      <span>Garansi</span>
+      <span>Konfirmasi</span>
     </div>
     <div class="w-full h-2 rounded-full bg-slate-200 overflow-hidden">
       <div class="h-full bg-accent rounded-full transition-all" style="width: {% widthratio step total_steps 100 %}%"></div>
     </div>
+    <p class="text-xs text-slate-400 mt-2">Langkah {{ step }} dari {{ total_steps }}</p>
   </div>
 
   <form method="post" class="space-y-8">
@@ -20,88 +27,184 @@
 
     {% if step == 1 %}
       <div>
-        <h1 class="text-2xl font-bold text-slate-900 mb-2">Mau seri iPhone tertentu?</h1>
-        <p class="text-slate-500 mb-6">Pilih salah satu, atau lewati jika tidak masalah.</p>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <h1 class="text-2xl font-bold text-slate-900 mb-2">iPhone seri berapa yang kamu inginkan?</h1>
+        <p class="text-slate-500 mb-6">Pilih salah satu, atau biarkan AI yang memilihkan.</p>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {% for value, label, subtitle in seri_options %}
           <label class="option-card">
-            <input type="radio" name="seri" value="" {% if not selected_seri %}checked{% endif %}>
+            <input type="radio" name="seri" value="{{ value }}" {% if selected_seri == value %}checked{% endif %}>
             <div class="option-card-body">
-              <span class="font-semibold text-slate-900">Semua seri</span>
-              <span class="block text-sm text-slate-500">Tidak masalah, tampilkan semua</span>
-            </div>
-          </label>
-          {% for seri in seri_options %}
-          <label class="option-card">
-            <input type="radio" name="seri" value="{{ seri }}" {% if selected_seri == seri %}checked{% endif %}>
-            <div class="option-card-body">
-              <span class="font-semibold text-slate-900">{{ seri }}</span>
+              <span class="font-semibold text-slate-900">{{ label }}</span>
+              <span class="block text-xs text-slate-400 mt-1">{{ subtitle }}</span>
             </div>
           </label>
           {% endfor %}
+          <label class="option-card">
+            <input type="radio" name="seri" value="" {% if not selected_seri %}checked{% endif %}>
+            <div class="option-card-body">
+              <span class="font-semibold text-slate-900">Semua Seri</span>
+              <span class="block text-xs text-slate-400 mt-1">Biarkan AI yang memilihkan</span>
+            </div>
+          </label>
         </div>
       </div>
 
     {% elif step == 2 %}
       <div>
-        <h1 class="text-2xl font-bold text-slate-900 mb-2">Butuh penyimpanan minimal berapa?</h1>
-        <p class="text-slate-500 mb-6">Kami akan cari listing dengan storage sama atau lebih besar.</p>
-        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <h1 class="text-2xl font-bold text-slate-900 mb-2">Varian model apa yang kamu inginkan?</h1>
+        <p class="text-slate-500 mb-6">Pilih salah satu, atau tampilkan semua varian.</p>
+        {% if relaxed_msg %}
+        <div class="bg-amber-50 border border-amber-200 text-amber-700 text-sm rounded-xl px-4 py-3 mb-6">
+          {{ relaxed_msg }}
+        </div>
+        {% endif %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {% for value, label, subtitle in varian_options %}
           <label class="option-card">
-            <input type="radio" name="storage_min" value="" {% if not selected_storage %}checked{% endif %}>
-            <div class="option-card-body"><span class="font-semibold text-slate-900">Tidak masalah</span></div>
-          </label>
-          {% for gb in storage_options %}
-          <label class="option-card">
-            <input type="radio" name="storage_min" value="{{ gb }}" {% if selected_storage == gb %}checked{% endif %}>
-            <div class="option-card-body"><span class="font-semibold text-slate-900">{{ gb }}GB+</span></div>
+            <input type="radio" name="varian" value="{{ value }}" {% if selected_varian == value %}checked{% endif %}>
+            <div class="option-card-body">
+              <span class="font-semibold text-slate-900">{{ label }}</span>
+              <span class="block text-xs text-slate-400 mt-1">{{ subtitle }}</span>
+            </div>
           </label>
           {% endfor %}
+          <label class="option-card">
+            <input type="radio" name="varian" value="" {% if not selected_varian %}checked{% endif %}>
+            <div class="option-card-body">
+              <span class="font-semibold text-slate-900">Semua Varian</span>
+              <span class="block text-xs text-slate-400 mt-1">Tampilkan semua pilihan</span>
+            </div>
+          </label>
         </div>
       </div>
 
     {% elif step == 3 %}
       <div>
-        <h1 class="text-2xl font-bold text-slate-900 mb-2">Battery Health minimum berapa persen?</h1>
-        <p class="text-slate-500 mb-6">Listing dengan BH di bawah angka ini tidak akan ditampilkan.</p>
-        <div class="bg-white border border-slate-200 rounded-2xl p-6">
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-sm text-slate-500">Minimum</span>
-            <span id="bh-value" class="text-2xl font-bold text-accent">{{ selected_bh|default:0 }}%</span>
-          </div>
-          <input
-            type="range" min="0" max="100" step="5"
-            name="bh_min" value="{{ selected_bh|default:0 }}"
-            oninput="document.getElementById('bh-value').textContent = this.value + '%'"
-            class="w-full accent-accent"
-          >
-          <div class="flex justify-between text-xs text-slate-400 mt-1">
-            <span>0% (tidak masalah)</span>
-            <span>100%</span>
-          </div>
+        <h1 class="text-2xl font-bold text-slate-900 mb-2">Berapa budget maksimal kamu?</h1>
+        <p class="text-slate-500 mb-6">Pilih rentang harga yang sesuai dengan kantongmu.</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {% for key, label, subtitle, lo, hi in harga_options %}
+          <label class="option-card">
+            <input type="radio" name="harga" value="{{ key }}" {% if selected_harga == key %}checked{% endif %}>
+            <div class="option-card-body">
+              <span class="font-semibold text-slate-900">{{ label }}</span>
+              <span class="block text-xs text-slate-400 mt-1">{{ subtitle }}</span>
+            </div>
+          </label>
+          {% endfor %}
+          <label class="option-card sm:col-span-2">
+            <input type="radio" name="harga" value="{{ harga_any_key }}" {% if not selected_harga or selected_harga == harga_any_key %}checked{% endif %}>
+            <div class="option-card-body">
+              <span class="font-semibold text-slate-900">Tidak ada batasan harga — tampilkan yang terbaik</span>
+              <span class="block text-xs text-slate-400 mt-1">AI pilihkan yang value terbaik</span>
+            </div>
+          </label>
         </div>
       </div>
 
     {% elif step == 4 %}
       <div>
-        <h1 class="text-2xl font-bold text-slate-900 mb-2">Kondisi fisik minimal seperti apa?</h1>
-        <p class="text-slate-500 mb-6">Pilih standar kondisi fisik minimum yang kamu terima.</p>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <h1 class="text-2xl font-bold text-slate-900 mb-2">Berapa kapasitas penyimpanan yang kamu butuhkan?</h1>
+        <p class="text-slate-500 mb-6">Kami akan cari listing dengan storage sama atau lebih besar.</p>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          {% for gb, label, subtitle in storage_options %}
           <label class="option-card">
-            <input type="radio" name="kondisi_min" value="" {% if not selected_kondisi %}checked{% endif %}>
-            <div class="option-card-body"><span class="font-semibold text-slate-900">Tidak masalah</span></div>
-          </label>
-          {% for value, label in kondisi_options %}
-          <label class="option-card">
-            <input type="radio" name="kondisi_min" value="{{ value }}" {% if selected_kondisi == value %}checked{% endif %}>
-            <div class="option-card-body"><span class="font-semibold text-slate-900">{{ label }}</span></div>
+            <input type="radio" name="storage_min" value="{{ gb }}" {% if selected_storage == gb %}checked{% endif %}>
+            <div class="option-card-body">
+              <span class="font-semibold text-slate-900">{{ label }}</span>
+              <span class="block text-xs text-slate-400 mt-1">{{ subtitle }}</span>
+            </div>
           </label>
           {% endfor %}
+          <label class="option-card">
+            <input type="radio" name="storage_min" value="" {% if not selected_storage %}checked{% endif %}>
+            <div class="option-card-body">
+              <span class="font-semibold text-slate-900">Tidak masalah</span>
+              <span class="block text-xs text-slate-400 mt-1">AI pilihkan storage terbaik di budget kamu</span>
+            </div>
+          </label>
         </div>
       </div>
 
     {% elif step == 5 %}
       <div>
-        <h1 class="text-2xl font-bold text-slate-900 mb-2">Konfirmasi preferensimu</h1>
+        <h1 class="text-2xl font-bold text-slate-900 mb-2">Berapa battery health minimum yang kamu terima?</h1>
+        <p class="text-slate-500 mb-6">Listing dengan BH di bawah angka ini tidak akan ditampilkan.</p>
+        <div class="grid grid-cols-2 gap-3">
+          {% for value, label, subtitle in bh_options %}
+          <label class="option-card">
+            <input type="radio" name="bh_min" value="{{ value }}" {% if selected_bh == value %}checked{% endif %}>
+            <div class="option-card-body">
+              <span class="font-semibold text-slate-900">{{ label }}</span>
+              <span class="block text-xs text-slate-400 mt-1">{{ subtitle }}</span>
+            </div>
+          </label>
+          {% endfor %}
+          <label class="option-card">
+            <input type="radio" name="bh_min" value="" {% if not selected_bh %}checked{% endif %}>
+            <div class="option-card-body">
+              <span class="font-semibold text-slate-900">Tidak masalah</span>
+              <span class="block text-xs text-slate-400 mt-1">Prioritaskan faktor lain</span>
+            </div>
+          </label>
+        </div>
+        <p class="text-xs text-slate-400 mt-4">
+          ⓘ 72% listing di dataset kami tidak mencantumkan battery health.
+          Listing tanpa data BH tetap ditampilkan dengan keterangan "BH tidak tersedia".
+        </p>
+      </div>
+
+    {% elif step == 6 %}
+      <div>
+        <h1 class="text-2xl font-bold text-slate-900 mb-2">Kondisi fisik seperti apa yang kamu harapkan?</h1>
+        <p class="text-slate-500 mb-6">Pilih standar kondisi fisik minimum yang kamu terima.</p>
+        <div class="grid grid-cols-2 gap-3">
+          {% for value, label, subtitle in kondisi_options %}
+          <label class="option-card">
+            <input type="radio" name="kondisi_min" value="{{ value }}" {% if selected_kondisi == value %}checked{% endif %}>
+            <div class="option-card-body">
+              <span class="font-semibold text-slate-900">{{ label }}</span>
+              <span class="block text-xs text-slate-400 mt-1">{{ subtitle }}</span>
+            </div>
+          </label>
+          {% endfor %}
+          <label class="option-card">
+            <input type="radio" name="kondisi_min" value="" {% if not selected_kondisi %}checked{% endif %}>
+            <div class="option-card-body">
+              <span class="font-semibold text-slate-900">Tidak masalah</span>
+              <span class="block text-xs text-slate-400 mt-1">Prioritaskan spesifikasi & harga</span>
+            </div>
+          </label>
+        </div>
+      </div>
+
+    {% elif step == 7 %}
+      <div>
+        <h1 class="text-2xl font-bold text-slate-900 mb-2">Status garansi apa yang kamu inginkan?</h1>
+        <p class="text-slate-500 mb-6">Pilih status garansi yang kamu inginkan.</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {% for value, label, subtitle in garansi_options %}
+          <label class="option-card">
+            <input type="radio" name="garansi" value="{{ value }}" {% if selected_garansi == value %}checked{% endif %}>
+            <div class="option-card-body">
+              <span class="font-semibold text-slate-900">{{ label }}</span>
+              <span class="block text-xs text-slate-400 mt-1">{{ subtitle }}</span>
+            </div>
+          </label>
+          {% endfor %}
+          <label class="option-card">
+            <input type="radio" name="garansi" value="" {% if not selected_garansi %}checked{% endif %}>
+            <div class="option-card-body">
+              <span class="font-semibold text-slate-900">Tidak masalah</span>
+              <span class="block text-xs text-slate-400 mt-1">Tampilkan semua pilihan garansi</span>
+            </div>
+          </label>
+        </div>
+      </div>
+
+    {% elif step == 8 %}
+      <div>
+        <h1 class="text-2xl font-bold text-slate-900 mb-2">Ini preferensi kamu — sudah sesuai?</h1>
         <p class="text-slate-500 mb-6">Pastikan preferensi di bawah ini sudah sesuai sebelum kami mencarikan rekomendasi.</p>
         <div class="bg-white border border-slate-200 rounded-2xl divide-y divide-slate-100">
           {% for label, value in summary.items %}
@@ -117,14 +220,14 @@
     <div class="flex items-center justify-between pt-4">
       {% if step > 1 %}
         <a href="{% url 'wizard_step' step=prev_step %}" class="text-slate-500 hover:text-slate-800 font-medium px-6 py-3">
-          &larr; Kembali
+          &larr; {% if step == 8 %}Ubah Preferensi{% else %}Kembali{% endif %}
         </a>
       {% else %}
         <span></span>
       {% endif %}
 
       <button type="submit" class="bg-accent hover:bg-accent-dark text-white font-semibold px-8 py-3 rounded-full shadow-sm transition">
-        {% if step == 5 %}Lihat Rekomendasi{% else %}Lanjut &rarr;{% endif %}
+        {% if step == 8 %}Cari Rekomendasi Terbaik &rarr;{% else %}Lanjut &rarr;{% endif %}
       </button>
     </div>
   </form>

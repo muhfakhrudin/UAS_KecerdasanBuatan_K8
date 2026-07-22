@@ -1,16 +1,20 @@
 """
-Orchestrator utama. Menerima input dari multi-step dialog, menggabungkan
+Orchestrator utama. Menerima input dari wizard multi-step, menggabungkan
 TF-IDF intent detection + BM25 + ValueScore -> return top 3 rekomendasi.
 
 Alur:
-1. detect_intent(query) -> mode + signals
-2. Terapkan hard filter dari dialog:
-   - filter seri (jika user pilih seri tertentu)
+1. detect_intent(query) -> mode + signals (query kosong jika wizard tidak
+   mengumpulkan teks bebas -- BM25/TF-IDF tetap berjalan, hanya tidak
+   berkontribusi pada skor karena tidak ada token untuk dicocokkan)
+2. Terapkan hard filter dari wizard:
+   - filter seri, varian model, range harga
    - filter storage minimum
    - filter BH minimum (hard cutoff, bukan soft)
    - filter kondisi minimum
+   - filter status garansi
+   Jika hasil filter kosong, relaksasi kondisi & garansi lalu filter ulang.
 3. BM25 scoring pada corpus yang sudah terfilter
-4. ValueScore dengan bobot adaptif
+4. ValueScore dengan bobot adaptif (calculate_adaptive_weights)
 5. Final score = 0.55 * bm25_normalized + 0.45 * value_score
 6. Return top 3 dengan breakdown skor per dimensi + generate_reason()
 """
@@ -18,8 +22,7 @@ Alur:
 from core.models import IphoneListing
 
 from .bm25_engine import BM25Engine
-from .intent_detector import detect_intent
-from .value_score import BUDGET_FIRST_WEIGHTS, SPEC_FIRST_WEIGHTS
+from .intent_detector import detect_intent, extract_price_ceiling
 from .value_score import calculate as calculate_value_score
 
 KONDISI_ORDER = ['bekas', 'unknown', 'normal', 'mulus', 'like_new']
@@ -29,11 +32,38 @@ BH_LABEL = {
     'baik': 80,
 }
 
+BASE_WEIGHTS = {'bh': 0.30, 'gen': 0.25, 'kondisi': 0.20, 'price': 0.15, 'trust': 0.10}
+
+
+def calculate_adaptive_weights(session_data: dict) -> dict:
+    """Hitung bobot ValueScore berdasarkan jawaban wizard (varian, garansi, budget)."""
+    weights = dict(BASE_WEIGHTS)
+
+    if session_data.get('price_weight_zero'):
+        weights['bh'] += 0.08
+        weights['gen'] += 0.07
+        weights['price'] = 0.0
+
+    if session_data.get('varian') in ('pro', 'pro_max'):
+        weights['gen'] += 0.05
+        weights['trust'] -= 0.05
+
+    if session_data.get('garansi') == 'resmi':
+        weights['trust'] += 0.10
+        weights['kondisi'] -= 0.10
+
+    total = sum(weights.values())
+    return {k: v / total for k, v in weights.items()}
+
 
 def _apply_hard_filters(queryset, session_data: dict):
     seri = session_data.get('seri')
     if seri:
         queryset = queryset.filter(kategori_seri=seri)
+
+    varian = session_data.get('varian')
+    if varian:
+        queryset = queryset.filter(varian_model=varian)
 
     storage_min = session_data.get('storage_min')
     if storage_min:
@@ -48,36 +78,38 @@ def _apply_hard_filters(queryset, session_data: dict):
         allowed = KONDISI_ORDER[KONDISI_ORDER.index(kondisi_min):]
         queryset = queryset.filter(kondisi__in=allowed)
 
+    garansi = session_data.get('garansi')
+    if garansi:
+        queryset = queryset.filter(garansi=garansi)
+
+    harga_min = session_data.get('harga_min')
+    if harga_min:
+        queryset = queryset.filter(harga__gte=harga_min)
+
+    harga_max = session_data.get('harga_max') or extract_price_ceiling(session_data.get('query', ''))
+    if harga_max:
+        queryset = queryset.filter(harga__lte=harga_max)
+
     return queryset
 
 
-def get_recommendations(session_data: dict) -> list:
-    """
-    session_data berisi semua jawaban dialog:
-    {
-        'query': 'mau iphone kamera terbaik',
-        'mode': 'spec_first',
-        'seri': None,
-        'storage_min': 128,
-        'bh_min': 85,
-        'kondisi_min': 'normal',
-        'intent_signals': {...},
-        'weights': {'bh': 0.35, 'gen': 0.30, ...},
-    }
-    """
+def _filtered_listings(session_data: dict):
+    """Return (listings, relaxed). Jika filter penuh menghasilkan corpus kosong,
+    relaksasi kondisi & garansi lalu coba lagi."""
+    listings = list(_apply_hard_filters(IphoneListing.objects.all(), session_data))
+    if listings:
+        return listings, False
+
+    relaxed_data = dict(session_data)
+    relaxed_data['kondisi_min'] = None
+    relaxed_data['garansi'] = None
+    listings = list(_apply_hard_filters(IphoneListing.objects.all(), relaxed_data))
+    return listings, True
+
+
+def _score_and_rank(listings, session_data: dict) -> list:
     query = session_data.get('query', '')
-    intent = detect_intent(query)
-
-    mode = session_data.get('mode') or intent['mode']
-    weights = session_data.get('weights') or (
-        BUDGET_FIRST_WEIGHTS if mode == 'budget_first' else SPEC_FIRST_WEIGHTS
-    )
-
-    queryset = _apply_hard_filters(IphoneListing.objects.all(), session_data)
-    listings = list(queryset)
-
-    if not listings:
-        return []
+    weights = session_data.get('weights') or calculate_adaptive_weights(session_data)
 
     bm25 = BM25Engine.get_instance()
     listing_ids = [listing.id for listing in listings]
@@ -102,6 +134,36 @@ def get_recommendations(session_data: dict) -> list:
 
     results.sort(key=lambda r: r['final_score'], reverse=True)
     return results[:3]
+
+
+def get_recommendations_detailed(session_data: dict) -> dict:
+    """
+    session_data berisi jawaban wizard, mis.:
+    {
+        'seri': 'iPhone 13 Series',      # atau None
+        'varian': 'pro_max',             # atau None
+        'harga_min': 9000000,
+        'harga_max': 13000000,
+        'price_weight_zero': False,
+        'storage_min': 256,              # atau None
+        'bh_min': 85,                    # atau None
+        'kondisi_min': 'mulus',          # atau None
+        'garansi': 'tidak_ada',          # atau None
+    }
+    Return {'results': [...top 3...], 'relaxed': bool}
+    """
+    detect_intent(session_data.get('query', ''))  # sinyal intent (kompatibilitas alur lama)
+
+    listings, relaxed = _filtered_listings(session_data)
+    if not listings:
+        return {'results': [], 'relaxed': relaxed}
+
+    return {'results': _score_and_rank(listings, session_data), 'relaxed': relaxed}
+
+
+def get_recommendations(session_data: dict) -> list:
+    """Kompatibel dengan pemanggil lama: hanya mengembalikan daftar top 3."""
+    return get_recommendations_detailed(session_data)['results']
 
 
 def generate_reason(listing, weights: dict) -> str:

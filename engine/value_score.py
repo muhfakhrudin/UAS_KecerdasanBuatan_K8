@@ -14,8 +14,6 @@ Bobot budget_first mode:
 
 from functools import lru_cache
 
-from django.db.models import Max, Min
-
 KONDISI_SCORE = {'like_new': 1.0, 'mulus': 0.8, 'normal': 0.5, 'bekas': 0.2, 'unknown': 0.4}
 
 SPEC_FIRST_WEIGHTS = {'bh': 0.35, 'gen': 0.30, 'kondisi': 0.20, 'price': 0.00, 'trust': 0.15}
@@ -26,10 +24,28 @@ GENERASI_MIN, GENERASI_MAX = 11, 15
 
 @lru_cache(maxsize=1)
 def _harga_bounds():
+    """
+    Batas normalisasi harga pakai persentil (P5-P95), bukan min/max mentah.
+    Dataset ini punya outlier ekstrem (mis. Rp410rb dan Rp55jt) yang membuat
+    min-max normalization "menenggelamkan" perbedaan harga antar listing normal
+    -- akibatnya ValueScore nyaris tidak membedakan listing Rp1jt vs Rp9jt.
+    Percentile clipping membuat sinyal harga jauh lebih diskriminatif untuk
+    mayoritas listing, dengan listing ekstrem tetap ter-clamp ke 0.0/1.0.
+    """
     from core.models import IphoneListing
 
-    agg = IphoneListing.objects.aggregate(min_harga=Min('harga'), max_harga=Max('harga'))
-    return agg['min_harga'] or 0, agg['max_harga'] or 1
+    values = sorted(IphoneListing.objects.values_list('harga', flat=True))
+    n = len(values)
+    if n == 0:
+        return 0, 1
+    if n < 20:
+        return values[0], values[-1]
+
+    lo = values[int(n * 0.05)]
+    hi = values[int(n * 0.95)]
+    if hi == lo:
+        return values[0], values[-1]
+    return lo, hi
 
 
 def clear_harga_bounds_cache():

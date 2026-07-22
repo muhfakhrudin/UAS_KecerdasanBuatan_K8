@@ -9,24 +9,16 @@
     Temukan iPhone Bekas Terbaik Untukmu
   </h1>
   <p class="text-slate-500 text-lg mb-10">
-    Ceritakan kebutuhanmu, jawab beberapa pertanyaan singkat, dan biarkan SmartPick
-    mencarikan 3 listing terbaik dari ratusan iPhone second yang tersedia.
+    Jawab 8 pertanyaan singkat, dapatkan 3 rekomendasi terbaik lengkap dengan link pembelian langsung.
   </p>
 
-  <form method="post" action="{% url 'wizard_start' %}" class="flex flex-col items-center gap-4">
+  <form method="post" action="{% url 'wizard_start' %}">
     {% csrf_token %}
-    <textarea
-      name="query"
-      required
-      rows="3"
-      placeholder="Contoh: mau iPhone yang kamera-nya bagus"
-      class="w-full rounded-2xl border border-slate-300 px-5 py-4 text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent resize-none"
-    ></textarea>
     <button
       type="submit"
-      class="bg-accent hover:bg-accent-dark text-white font-semibold px-8 py-3 rounded-full shadow-sm transition"
+      class="bg-accent hover:bg-accent-dark text-white font-semibold px-8 py-4 rounded-full shadow-sm transition text-lg"
     >
-      Mulai Cari Rekomendasi
+      Mulai Temukan iPhone Saya &rarr;
     </button>
   </form>
 </section>
@@ -35,17 +27,17 @@
   <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
     <div class="bg-white rounded-2xl border border-slate-200 p-6 text-center">
       <div class="w-10 h-10 mx-auto mb-4 rounded-full bg-blue-50 text-accent flex items-center justify-center font-bold">1</div>
-      <h3 class="font-semibold text-slate-900 mb-1">Tulis</h3>
-      <p class="text-sm text-slate-500">Ceritakan apa yang kamu cari dari iPhone bekas impianmu.</p>
+      <h3 class="font-semibold text-slate-900 mb-1">Pilih Preferensi</h3>
+      <p class="text-sm text-slate-500">Jawab 8 pertanyaan singkat tentang iPhone bekas idaman kamu.</p>
     </div>
     <div class="bg-white rounded-2xl border border-slate-200 p-6 text-center">
       <div class="w-10 h-10 mx-auto mb-4 rounded-full bg-blue-50 text-accent flex items-center justify-center font-bold">2</div>
-      <h3 class="font-semibold text-slate-900 mb-1">Dialog</h3>
-      <p class="text-sm text-slate-500">Jawab 5 pertanyaan singkat untuk mempertajam preferensimu.</p>
+      <h3 class="font-semibold text-slate-900 mb-1">AI Analisis</h3>
+      <p class="text-sm text-slate-500">Engine BM25 + Value Score mencocokkan preferensimu dengan ratusan listing.</p>
     </div>
     <div class="bg-white rounded-2xl border border-slate-200 p-6 text-center">
       <div class="w-10 h-10 mx-auto mb-4 rounded-full bg-blue-50 text-accent flex items-center justify-center font-bold">3</div>
-      <h3 class="font-semibold text-slate-900 mb-1">Rekomendasi</h3>
+      <h3 class="font-semibold text-slate-900 mb-1">Dapatkan Rekomendasi</h3>
       <p class="text-sm text-slate-500">Dapatkan 3 listing terbaik lengkap dengan alasan & link beli.</p>
     </div>
   </div>
