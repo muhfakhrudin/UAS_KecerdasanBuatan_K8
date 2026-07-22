@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+
+{% block title %}SmartPick — Step {{ step }} dari {{ total_steps }}{% endblock %}
+
+{% block content %}
+<section class="max-w-3xl mx-auto px-6 py-14">
+
+  <div class="mb-10">
+    <div class="flex justify-between text-xs font-medium text-slate-400 mb-2">
+      <span>Step {{ step }} dari {{ total_steps }}</span>
+      <span>{{ query }}</span>
+    </div>
+    <div class="w-full h-2 rounded-full bg-slate-200 overflow-hidden">
+      <div class="h-full bg-accent rounded-full transition-all" style="width: {% widthratio step total_steps 100 %}%"></div>
+    </div>
+  </div>
+
+  <form method="post" class="space-y-8">
+    {% csrf_token %}
+
+    {% if step == 1 %}
+      <div>
+        <h1 class="text-2xl font-bold text-slate-900 mb-2">Mau seri iPhone tertentu?</h1>
+        <p class="text-slate-500 mb-6">Pilih salah satu, atau lewati jika tidak masalah.</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <label class="option-card">
+            <input type="radio" name="seri" value="" {% if not selected_seri %}checked{% endif %}>
+            <div class="option-card-body">
+              <span class="font-semibold text-slate-900">Semua seri</span>
+              <span class="block text-sm text-slate-500">Tidak masalah, tampilkan semua</span>
+            </div>
+          </label>
+          {% for seri in seri_options %}
+          <label class="option-card">
+            <input type="radio" name="seri" value="{{ seri }}" {% if selected_seri == seri %}checked{% endif %}>
+            <div class="option-card-body">
+              <span class="font-semibold text-slate-900">{{ seri }}</span>
+            </div>
+          </label>
+          {% endfor %}
+        </div>
+      </div>
+
+    {% elif step == 2 %}
+      <div>
+        <h1 class="text-2xl font-bold text-slate-900 mb-2">Butuh penyimpanan minimal berapa?</h1>
+        <p class="text-slate-500 mb-6">Kami akan cari listing dengan storage sama atau lebih besar.</p>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <label class="option-card">
+            <input type="radio" name="storage_min" value="" {% if not selected_storage %}checked{% endif %}>
+            <div class="option-card-body"><span class="font-semibold text-slate-900">Tidak masalah</span></div>
+          </label>
+          {% for gb in storage_options %}
+          <label class="option-card">
+            <input type="radio" name="storage_min" value="{{ gb }}" {% if selected_storage == gb %}checked{% endif %}>
+            <div class="option-card-body"><span class="font-semibold text-slate-900">{{ gb }}GB+</span></div>
+          </label>
+          {% endfor %}
+        </div>
+      </div>
+
+    {% elif step == 3 %}
+      <div>
+        <h1 class="text-2xl font-bold text-slate-900 mb-2">Battery Health minimum berapa persen?</h1>
+        <p class="text-slate-500 mb-6">Listing dengan BH di bawah angka ini tidak akan ditampilkan.</p>
+        <div class="bg-white border border-slate-200 rounded-2xl p-6">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm text-slate-500">Minimum</span>
+            <span id="bh-value" class="text-2xl font-bold text-accent">{{ selected_bh|default:0 }}%</span>
+          </div>
+          <input
+            type="range" min="0" max="100" step="5"
+            name="bh_min" value="{{ selected_bh|default:0 }}"
+            oninput="document.getElementById('bh-value').textContent = this.value + '%'"
+            class="w-full accent-accent"
+          >
+          <div class="flex justify-between text-xs text-slate-400 mt-1">
+            <span>0% (tidak masalah)</span>
+            <span>100%</span>
+          </div>
+        </div>
+      </div>
+
+    {% elif step == 4 %}
+      <div>
+        <h1 class="text-2xl font-bold text-slate-900 mb-2">Kondisi fisik minimal seperti apa?</h1>
+        <p class="text-slate-500 mb-6">Pilih standar kondisi fisik minimum yang kamu terima.</p>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <label class="option-card">
+            <input type="radio" name="kondisi_min" value="" {% if not selected_kondisi %}checked{% endif %}>
+            <div class="option-card-body"><span class="font-semibold text-slate-900">Tidak masalah</span></div>
+          </label>
+          {% for value, label in kondisi_options %}
+          <label class="option-card">
+            <input type="radio" name="kondisi_min" value="{{ value }}" {% if selected_kondisi == value %}checked{% endif %}>
+            <div class="option-card-body"><span class="font-semibold text-slate-900">{{ label }}</span></div>
+          </label>
+          {% endfor %}
+        </div>
+      </div>
+
+    {% elif step == 5 %}
+      <div>
+        <h1 class="text-2xl font-bold text-slate-900 mb-2">Konfirmasi preferensimu</h1>
+        <p class="text-slate-500 mb-6">Pastikan preferensi di bawah ini sudah sesuai sebelum kami mencarikan rekomendasi.</p>
+        <div class="bg-white border border-slate-200 rounded-2xl divide-y divide-slate-100">
+          {% for label, value in summary.items %}
+          <div class="flex justify-between px-6 py-4">
+            <span class="text-slate-500">{{ label }}</span>
+            <span class="font-semibold text-slate-900">{{ value }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="flex items-center justify-between pt-4">
+      {% if step > 1 %}
+        <a href="{% url 'wizard_step' step=prev_step %}" class="text-slate-500 hover:text-slate-800 font-medium px-6 py-3">
+          &larr; Kembali
+        </a>
+      {% else %}
+        <span></span>
+      {% endif %}
+
+      <button type="submit" class="bg-accent hover:bg-accent-dark text-white font-semibold px-8 py-3 rounded-full shadow-sm transition">
+        {% if step == 5 %}Lihat Rekomendasi{% else %}Lanjut &rarr;{% endif %}
+      </button>
+    </div>
+  </form>
+</section>
+
+<style>
+  .option-card { display: block; cursor: pointer; }
+  .option-card input { position: absolute; opacity: 0; pointer-events: none; }
+  .option-card-body {
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 1rem 1.25rem;
+    transition: all .15s ease;
+    background: white;
+  }
+  .option-card input:checked + .option-card-body {
+    border-color: #2563EB;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    background: #eff6ff;
+  }
+</style>
+{% endblock %}
