@@ -3,7 +3,7 @@ from django.shortcuts import redirect, render
 from core.models import IphoneListing
 from engine.recommender import get_recommendations_detailed
 
-TOTAL_STEPS = 8
+TOTAL_STEPS = 9
 
 # --- Step 1: Seri -----------------------------------------------------
 SERI_OPTIONS = [
@@ -78,6 +78,21 @@ GARANSI_OPTIONS = [
     ('tidak_ada', 'Tidak Ada Garansi', 'Harga paling terjangkau, beli as-is'),
 ]
 GARANSI_LABEL = {value: label for value, label, _ in GARANSI_OPTIONS}
+
+# --- Step 8: Prioritas Utama ----------------------------------------------
+# Menentukan dimensi ValueScore mana yang di-boost (lihat
+# engine.recommender.calculate_adaptive_weights). Hanya mencakup dimensi yang
+# memang dihitung sebagai skor berbobot (bh, gen, kondisi, price, trust) --
+# atribut bertepi tegas seperti garansi tetap ditangani lewat hard filter
+# di step 7, bukan lewat prioritas lunak di sini.
+PRIORITY_OPTIONS = [
+    ('bh', 'Battery Health Terbaik', 'Prioritaskan baterai paling prima'),
+    ('price', 'Harga Termurah', 'Prioritaskan value-for-money terbaik'),
+    ('kondisi', 'Kondisi Fisik Terbaik', 'Prioritaskan unit paling mulus'),
+    ('gen', 'Generasi Terbaru', 'Prioritaskan seri/performa terbaru'),
+    ('trust', 'Toko Paling Terpercaya', 'Prioritaskan rating & riwayat penjualan toko'),
+]
+PRIORITY_LABEL = {value: label for value, label, _ in PRIORITY_OPTIONS}
 
 
 def index(request):
@@ -163,7 +178,10 @@ def _save_step(request, step, wizard_data):
 
     elif step == 7:
         wizard_data['garansi'] = request.POST.get('garansi') or None
-    # step 8 = halaman konfirmasi, tidak ada input baru untuk disimpan
+
+    elif step == 8:
+        wizard_data['priority'] = request.POST.get('priority') or None
+    # step 9 = halaman konfirmasi, tidak ada input baru untuk disimpan
 
 
 def _build_step_context(step, wizard_data):
@@ -198,6 +216,9 @@ def _build_step_context(step, wizard_data):
         context['garansi_options'] = GARANSI_OPTIONS
         context['selected_garansi'] = wizard_data.get('garansi')
     elif step == 8:
+        context['priority_options'] = PRIORITY_OPTIONS
+        context['selected_priority'] = wizard_data.get('priority')
+    elif step == 9:
         context['summary'] = _build_summary(wizard_data)
 
     return context
@@ -211,6 +232,7 @@ def _build_summary(wizard_data):
     bh_min = wizard_data.get('bh_min')
     kondisi_min = wizard_data.get('kondisi_min')
     garansi = wizard_data.get('garansi')
+    priority = wizard_data.get('priority')
 
     harga_label = 'Tidak ada batasan'
     if harga_key and harga_key != HARGA_ANY_KEY:
@@ -224,6 +246,7 @@ def _build_summary(wizard_data):
         'Battery Health': f'{bh_min}% ke atas' if bh_min else 'Tidak masalah',
         'Kondisi': KONDISI_LABEL.get(kondisi_min, 'Tidak masalah'),
         'Garansi': GARANSI_LABEL.get(garansi, 'Tidak masalah'),
+        'Prioritas Utama': PRIORITY_LABEL.get(priority, 'Semua faktor sama penting'),
     }
 
 
@@ -238,6 +261,7 @@ def _run_engine_and_redirect(request, wizard_data):
         'bh_min': wizard_data.get('bh_min'),
         'kondisi_min': wizard_data.get('kondisi_min'),
         'garansi': wizard_data.get('garansi'),
+        'priority': wizard_data.get('priority'),
     }
 
     outcome = get_recommendations_detailed(session_data)

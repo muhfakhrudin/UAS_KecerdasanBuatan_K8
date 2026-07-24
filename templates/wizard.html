@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 
-{% block title %}SmartPick — Langkah {{ step }} dari {{ total_steps }}{% endblock %}
+{% block title %}iRecom Master — Langkah {{ step }} dari {{ total_steps }}{% endblock %}
 
 {% block content %}
 <section class="max-w-3xl mx-auto px-6 py-14">
 
   <div class="mb-10">
-    <div class="hidden sm:flex justify-between text-xs font-medium text-slate-400 mb-2">
+    <div class="hidden sm:flex justify-between text-xs font-medium text-zinc-400 dark:text-zinc-600 mb-2">
       <span>Seri</span>
       <span>Varian</span>
       <span>Budget</span>
@@ -14,12 +14,13 @@
       <span>Baterai</span>
       <span>Kondisi</span>
       <span>Garansi</span>
+      <span>Prioritas</span>
       <span>Konfirmasi</span>
     </div>
-    <div class="w-full h-2 rounded-full bg-slate-200 overflow-hidden">
-      <div class="h-full bg-accent rounded-full transition-all" style="width: {% widthratio step total_steps 100 %}%"></div>
+    <div class="w-full h-2 rounded-full bg-zinc-200 dark:bg-zinc-800 overflow-hidden">
+      <div class="h-full bg-accent-600 rounded-full transition-all" style="width: {% widthratio step total_steps 100 %}%"></div>
     </div>
-    <p class="text-xs text-slate-400 mt-2">Langkah {{ step }} dari {{ total_steps }}</p>
+    <p class="text-xs text-zinc-400 dark:text-zinc-600 mt-2">Langkah {{ step }} dari {{ total_steps }}</p>
   </div>
 
   <form method="post" class="space-y-8">
@@ -27,23 +28,23 @@
 
     {% if step == 1 %}
       <div>
-        <h1 class="text-2xl font-bold text-slate-900 mb-2">iPhone seri berapa yang kamu inginkan?</h1>
-        <p class="text-slate-500 mb-6">Pilih salah satu, atau biarkan AI yang memilihkan.</p>
+        <h1 class="font-display text-2xl font-bold text-zinc-900 dark:text-white mb-2">iPhone seri berapa yang kamu inginkan?</h1>
+        <p class="text-zinc-500 dark:text-zinc-400 mb-6">Pilih salah satu, atau biarkan AI yang memilihkan.</p>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {% for value, label, subtitle in seri_options %}
-          <label class="option-card">
-            <input type="radio" name="seri" value="{{ value }}" {% if selected_seri == value %}checked{% endif %}>
-            <div class="option-card-body">
-              <span class="font-semibold text-slate-900">{{ label }}</span>
-              <span class="block text-xs text-slate-400 mt-1">{{ subtitle }}</span>
+          <label class="block cursor-pointer">
+            <input class="peer sr-only" type="radio" name="seri" value="{{ value }}" {% if selected_seri == value %}checked{% endif %}>
+            <div class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-3.5 transition-colors hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 peer-checked:bg-accent-50 peer-checked:ring-2 peer-checked:ring-accent-500/20 dark:peer-checked:bg-accent-950/40 dark:peer-checked:border-accent-400">
+              <span class="font-semibold text-zinc-900 dark:text-white">{{ label }}</span>
+              <span class="block text-xs text-zinc-400 dark:text-zinc-500 mt-1">{{ subtitle }}</span>
             </div>
           </label>
           {% endfor %}
-          <label class="option-card">
-            <input type="radio" name="seri" value="" {% if not selected_seri %}checked{% endif %}>
-            <div class="option-card-body">
-              <span class="font-semibold text-slate-900">Semua Seri</span>
-              <span class="block text-xs text-slate-400 mt-1">Biarkan AI yang memilihkan</span>
+          <label class="block cursor-pointer">
+            <input class="peer sr-only" type="radio" name="seri" value="" {% if not selected_seri %}checked{% endif %}>
+            <div class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-3.5 transition-colors hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 peer-checked:bg-accent-50 peer-checked:ring-2 peer-checked:ring-accent-500/20 dark:peer-checked:bg-accent-950/40 dark:peer-checked:border-accent-400">
+              <span class="font-semibold text-zinc-900 dark:text-white">Semua Seri</span>
+              <span class="block text-xs text-zinc-400 dark:text-zinc-500 mt-1">Biarkan AI yang memilihkan</span>
             </div>
           </label>
         </div>
@@ -51,28 +52,28 @@
 
     {% elif step == 2 %}
       <div>
-        <h1 class="text-2xl font-bold text-slate-900 mb-2">Varian model apa yang kamu inginkan?</h1>
-        <p class="text-slate-500 mb-6">Pilih salah satu, atau tampilkan semua varian.</p>
+        <h1 class="font-display text-2xl font-bold text-zinc-900 dark:text-white mb-2">Varian model apa yang kamu inginkan?</h1>
+        <p class="text-zinc-500 dark:text-zinc-400 mb-6">Pilih salah satu, atau tampilkan semua varian.</p>
         {% if relaxed_msg %}
-        <div class="bg-amber-50 border border-amber-200 text-amber-700 text-sm rounded-xl px-4 py-3 mb-6">
+        <div class="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300 text-sm rounded-xl px-4 py-3 mb-6">
           {{ relaxed_msg }}
         </div>
         {% endif %}
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {% for value, label, subtitle in varian_options %}
-          <label class="option-card">
-            <input type="radio" name="varian" value="{{ value }}" {% if selected_varian == value %}checked{% endif %}>
-            <div class="option-card-body">
-              <span class="font-semibold text-slate-900">{{ label }}</span>
-              <span class="block text-xs text-slate-400 mt-1">{{ subtitle }}</span>
+          <label class="block cursor-pointer">
+            <input class="peer sr-only" type="radio" name="varian" value="{{ value }}" {% if selected_varian == value %}checked{% endif %}>
+            <div class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-3.5 transition-colors hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 peer-checked:bg-accent-50 peer-checked:ring-2 peer-checked:ring-accent-500/20 dark:peer-checked:bg-accent-950/40 dark:peer-checked:border-accent-400">
+              <span class="font-semibold text-zinc-900 dark:text-white">{{ label }}</span>
+              <span class="block text-xs text-zinc-400 dark:text-zinc-500 mt-1">{{ subtitle }}</span>
             </div>
           </label>
           {% endfor %}
-          <label class="option-card">
-            <input type="radio" name="varian" value="" {% if not selected_varian %}checked{% endif %}>
-            <div class="option-card-body">
-              <span class="font-semibold text-slate-900">Semua Varian</span>
-              <span class="block text-xs text-slate-400 mt-1">Tampilkan semua pilihan</span>
+          <label class="block cursor-pointer">
+            <input class="peer sr-only" type="radio" name="varian" value="" {% if not selected_varian %}checked{% endif %}>
+            <div class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-3.5 transition-colors hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 peer-checked:bg-accent-50 peer-checked:ring-2 peer-checked:ring-accent-500/20 dark:peer-checked:bg-accent-950/40 dark:peer-checked:border-accent-400">
+              <span class="font-semibold text-zinc-900 dark:text-white">Semua Varian</span>
+              <span class="block text-xs text-zinc-400 dark:text-zinc-500 mt-1">Tampilkan semua pilihan</span>
             </div>
           </label>
         </div>
@@ -80,23 +81,23 @@
 
     {% elif step == 3 %}
       <div>
-        <h1 class="text-2xl font-bold text-slate-900 mb-2">Berapa budget maksimal kamu?</h1>
-        <p class="text-slate-500 mb-6">Pilih rentang harga yang sesuai dengan kantongmu.</p>
+        <h1 class="font-display text-2xl font-bold text-zinc-900 dark:text-white mb-2">Berapa budget maksimal kamu?</h1>
+        <p class="text-zinc-500 dark:text-zinc-400 mb-6">Pilih rentang harga yang sesuai dengan kantongmu.</p>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {% for key, label, subtitle, lo, hi in harga_options %}
-          <label class="option-card">
-            <input type="radio" name="harga" value="{{ key }}" {% if selected_harga == key %}checked{% endif %}>
-            <div class="option-card-body">
-              <span class="font-semibold text-slate-900">{{ label }}</span>
-              <span class="block text-xs text-slate-400 mt-1">{{ subtitle }}</span>
+          <label class="block cursor-pointer">
+            <input class="peer sr-only" type="radio" name="harga" value="{{ key }}" {% if selected_harga == key %}checked{% endif %}>
+            <div class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-3.5 transition-colors hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 peer-checked:bg-accent-50 peer-checked:ring-2 peer-checked:ring-accent-500/20 dark:peer-checked:bg-accent-950/40 dark:peer-checked:border-accent-400">
+              <span class="font-semibold text-zinc-900 dark:text-white">{{ label }}</span>
+              <span class="block text-xs text-zinc-400 dark:text-zinc-500 mt-1">{{ subtitle }}</span>
             </div>
           </label>
           {% endfor %}
-          <label class="option-card sm:col-span-2">
-            <input type="radio" name="harga" value="{{ harga_any_key }}" {% if not selected_harga or selected_harga == harga_any_key %}checked{% endif %}>
-            <div class="option-card-body">
-              <span class="font-semibold text-slate-900">Tidak ada batasan harga — tampilkan yang terbaik</span>
-              <span class="block text-xs text-slate-400 mt-1">AI pilihkan yang value terbaik</span>
+          <label class="block cursor-pointer sm:col-span-2">
+            <input class="peer sr-only" type="radio" name="harga" value="{{ harga_any_key }}" {% if not selected_harga or selected_harga == harga_any_key %}checked{% endif %}>
+            <div class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-3.5 transition-colors hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 peer-checked:bg-accent-50 peer-checked:ring-2 peer-checked:ring-accent-500/20 dark:peer-checked:bg-accent-950/40 dark:peer-checked:border-accent-400">
+              <span class="font-semibold text-zinc-900 dark:text-white">Tidak ada batasan harga — tampilkan yang terbaik</span>
+              <span class="block text-xs text-zinc-400 dark:text-zinc-500 mt-1">AI pilihkan yang value terbaik</span>
             </div>
           </label>
         </div>
@@ -104,23 +105,23 @@
 
     {% elif step == 4 %}
       <div>
-        <h1 class="text-2xl font-bold text-slate-900 mb-2">Berapa kapasitas penyimpanan yang kamu butuhkan?</h1>
-        <p class="text-slate-500 mb-6">Kami akan cari listing dengan storage sama atau lebih besar.</p>
+        <h1 class="font-display text-2xl font-bold text-zinc-900 dark:text-white mb-2">Berapa kapasitas penyimpanan yang kamu butuhkan?</h1>
+        <p class="text-zinc-500 dark:text-zinc-400 mb-6">Kami akan cari listing dengan storage sama atau lebih besar.</p>
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {% for gb, label, subtitle in storage_options %}
-          <label class="option-card">
-            <input type="radio" name="storage_min" value="{{ gb }}" {% if selected_storage == gb %}checked{% endif %}>
-            <div class="option-card-body">
-              <span class="font-semibold text-slate-900">{{ label }}</span>
-              <span class="block text-xs text-slate-400 mt-1">{{ subtitle }}</span>
+          <label class="block cursor-pointer">
+            <input class="peer sr-only" type="radio" name="storage_min" value="{{ gb }}" {% if selected_storage == gb %}checked{% endif %}>
+            <div class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-3.5 transition-colors hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 peer-checked:bg-accent-50 peer-checked:ring-2 peer-checked:ring-accent-500/20 dark:peer-checked:bg-accent-950/40 dark:peer-checked:border-accent-400">
+              <span class="font-semibold text-zinc-900 dark:text-white">{{ label }}</span>
+              <span class="block text-xs text-zinc-400 dark:text-zinc-500 mt-1">{{ subtitle }}</span>
             </div>
           </label>
           {% endfor %}
-          <label class="option-card">
-            <input type="radio" name="storage_min" value="" {% if not selected_storage %}checked{% endif %}>
-            <div class="option-card-body">
-              <span class="font-semibold text-slate-900">Tidak masalah</span>
-              <span class="block text-xs text-slate-400 mt-1">AI pilihkan storage terbaik di budget kamu</span>
+          <label class="block cursor-pointer">
+            <input class="peer sr-only" type="radio" name="storage_min" value="" {% if not selected_storage %}checked{% endif %}>
+            <div class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-3.5 transition-colors hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 peer-checked:bg-accent-50 peer-checked:ring-2 peer-checked:ring-accent-500/20 dark:peer-checked:bg-accent-950/40 dark:peer-checked:border-accent-400">
+              <span class="font-semibold text-zinc-900 dark:text-white">Tidak masalah</span>
+              <span class="block text-xs text-zinc-400 dark:text-zinc-500 mt-1">AI pilihkan storage terbaik di budget kamu</span>
             </div>
           </label>
         </div>
@@ -128,27 +129,27 @@
 
     {% elif step == 5 %}
       <div>
-        <h1 class="text-2xl font-bold text-slate-900 mb-2">Berapa battery health minimum yang kamu terima?</h1>
-        <p class="text-slate-500 mb-6">Listing dengan BH di bawah angka ini tidak akan ditampilkan.</p>
+        <h1 class="font-display text-2xl font-bold text-zinc-900 dark:text-white mb-2">Berapa battery health minimum yang kamu terima?</h1>
+        <p class="text-zinc-500 dark:text-zinc-400 mb-6">Listing dengan BH di bawah angka ini tidak akan ditampilkan.</p>
         <div class="grid grid-cols-2 gap-3">
           {% for value, label, subtitle in bh_options %}
-          <label class="option-card">
-            <input type="radio" name="bh_min" value="{{ value }}" {% if selected_bh == value %}checked{% endif %}>
-            <div class="option-card-body">
-              <span class="font-semibold text-slate-900">{{ label }}</span>
-              <span class="block text-xs text-slate-400 mt-1">{{ subtitle }}</span>
+          <label class="block cursor-pointer">
+            <input class="peer sr-only" type="radio" name="bh_min" value="{{ value }}" {% if selected_bh == value %}checked{% endif %}>
+            <div class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-3.5 transition-colors hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 peer-checked:bg-accent-50 peer-checked:ring-2 peer-checked:ring-accent-500/20 dark:peer-checked:bg-accent-950/40 dark:peer-checked:border-accent-400">
+              <span class="font-semibold text-zinc-900 dark:text-white">{{ label }}</span>
+              <span class="block text-xs text-zinc-400 dark:text-zinc-500 mt-1">{{ subtitle }}</span>
             </div>
           </label>
           {% endfor %}
-          <label class="option-card">
-            <input type="radio" name="bh_min" value="" {% if not selected_bh %}checked{% endif %}>
-            <div class="option-card-body">
-              <span class="font-semibold text-slate-900">Tidak masalah</span>
-              <span class="block text-xs text-slate-400 mt-1">Prioritaskan faktor lain</span>
+          <label class="block cursor-pointer">
+            <input class="peer sr-only" type="radio" name="bh_min" value="" {% if not selected_bh %}checked{% endif %}>
+            <div class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-3.5 transition-colors hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 peer-checked:bg-accent-50 peer-checked:ring-2 peer-checked:ring-accent-500/20 dark:peer-checked:bg-accent-950/40 dark:peer-checked:border-accent-400">
+              <span class="font-semibold text-zinc-900 dark:text-white">Tidak masalah</span>
+              <span class="block text-xs text-zinc-400 dark:text-zinc-500 mt-1">Prioritaskan faktor lain</span>
             </div>
           </label>
         </div>
-        <p class="text-xs text-slate-400 mt-4">
+        <p class="text-xs text-zinc-400 dark:text-zinc-600 mt-4">
           ⓘ 72% listing di dataset kami tidak mencantumkan battery health.
           Listing tanpa data BH tetap ditampilkan dengan keterangan "BH tidak tersedia".
         </p>
@@ -156,23 +157,23 @@
 
     {% elif step == 6 %}
       <div>
-        <h1 class="text-2xl font-bold text-slate-900 mb-2">Kondisi fisik seperti apa yang kamu harapkan?</h1>
-        <p class="text-slate-500 mb-6">Pilih standar kondisi fisik minimum yang kamu terima.</p>
+        <h1 class="font-display text-2xl font-bold text-zinc-900 dark:text-white mb-2">Kondisi fisik seperti apa yang kamu harapkan?</h1>
+        <p class="text-zinc-500 dark:text-zinc-400 mb-6">Pilih standar kondisi fisik minimum yang kamu terima.</p>
         <div class="grid grid-cols-2 gap-3">
           {% for value, label, subtitle in kondisi_options %}
-          <label class="option-card">
-            <input type="radio" name="kondisi_min" value="{{ value }}" {% if selected_kondisi == value %}checked{% endif %}>
-            <div class="option-card-body">
-              <span class="font-semibold text-slate-900">{{ label }}</span>
-              <span class="block text-xs text-slate-400 mt-1">{{ subtitle }}</span>
+          <label class="block cursor-pointer">
+            <input class="peer sr-only" type="radio" name="kondisi_min" value="{{ value }}" {% if selected_kondisi == value %}checked{% endif %}>
+            <div class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-3.5 transition-colors hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 peer-checked:bg-accent-50 peer-checked:ring-2 peer-checked:ring-accent-500/20 dark:peer-checked:bg-accent-950/40 dark:peer-checked:border-accent-400">
+              <span class="font-semibold text-zinc-900 dark:text-white">{{ label }}</span>
+              <span class="block text-xs text-zinc-400 dark:text-zinc-500 mt-1">{{ subtitle }}</span>
             </div>
           </label>
           {% endfor %}
-          <label class="option-card">
-            <input type="radio" name="kondisi_min" value="" {% if not selected_kondisi %}checked{% endif %}>
-            <div class="option-card-body">
-              <span class="font-semibold text-slate-900">Tidak masalah</span>
-              <span class="block text-xs text-slate-400 mt-1">Prioritaskan spesifikasi & harga</span>
+          <label class="block cursor-pointer">
+            <input class="peer sr-only" type="radio" name="kondisi_min" value="" {% if not selected_kondisi %}checked{% endif %}>
+            <div class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-3.5 transition-colors hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 peer-checked:bg-accent-50 peer-checked:ring-2 peer-checked:ring-accent-500/20 dark:peer-checked:bg-accent-950/40 dark:peer-checked:border-accent-400">
+              <span class="font-semibold text-zinc-900 dark:text-white">Tidak masalah</span>
+              <span class="block text-xs text-zinc-400 dark:text-zinc-500 mt-1">Prioritaskan spesifikasi & harga</span>
             </div>
           </label>
         </div>
@@ -180,23 +181,23 @@
 
     {% elif step == 7 %}
       <div>
-        <h1 class="text-2xl font-bold text-slate-900 mb-2">Status garansi apa yang kamu inginkan?</h1>
-        <p class="text-slate-500 mb-6">Pilih status garansi yang kamu inginkan.</p>
+        <h1 class="font-display text-2xl font-bold text-zinc-900 dark:text-white mb-2">Status garansi apa yang kamu inginkan?</h1>
+        <p class="text-zinc-500 dark:text-zinc-400 mb-6">Pilih status garansi yang kamu inginkan.</p>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {% for value, label, subtitle in garansi_options %}
-          <label class="option-card">
-            <input type="radio" name="garansi" value="{{ value }}" {% if selected_garansi == value %}checked{% endif %}>
-            <div class="option-card-body">
-              <span class="font-semibold text-slate-900">{{ label }}</span>
-              <span class="block text-xs text-slate-400 mt-1">{{ subtitle }}</span>
+          <label class="block cursor-pointer">
+            <input class="peer sr-only" type="radio" name="garansi" value="{{ value }}" {% if selected_garansi == value %}checked{% endif %}>
+            <div class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-3.5 transition-colors hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 peer-checked:bg-accent-50 peer-checked:ring-2 peer-checked:ring-accent-500/20 dark:peer-checked:bg-accent-950/40 dark:peer-checked:border-accent-400">
+              <span class="font-semibold text-zinc-900 dark:text-white">{{ label }}</span>
+              <span class="block text-xs text-zinc-400 dark:text-zinc-500 mt-1">{{ subtitle }}</span>
             </div>
           </label>
           {% endfor %}
-          <label class="option-card">
-            <input type="radio" name="garansi" value="" {% if not selected_garansi %}checked{% endif %}>
-            <div class="option-card-body">
-              <span class="font-semibold text-slate-900">Tidak masalah</span>
-              <span class="block text-xs text-slate-400 mt-1">Tampilkan semua pilihan garansi</span>
+          <label class="block cursor-pointer">
+            <input class="peer sr-only" type="radio" name="garansi" value="" {% if not selected_garansi %}checked{% endif %}>
+            <div class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-3.5 transition-colors hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 peer-checked:bg-accent-50 peer-checked:ring-2 peer-checked:ring-accent-500/20 dark:peer-checked:bg-accent-950/40 dark:peer-checked:border-accent-400">
+              <span class="font-semibold text-zinc-900 dark:text-white">Tidak masalah</span>
+              <span class="block text-xs text-zinc-400 dark:text-zinc-500 mt-1">Tampilkan semua pilihan garansi</span>
             </div>
           </label>
         </div>
@@ -204,13 +205,37 @@
 
     {% elif step == 8 %}
       <div>
-        <h1 class="text-2xl font-bold text-slate-900 mb-2">Ini preferensi kamu — sudah sesuai?</h1>
-        <p class="text-slate-500 mb-6">Pastikan preferensi di bawah ini sudah sesuai sebelum kami mencarikan rekomendasi.</p>
-        <div class="bg-white border border-slate-200 rounded-2xl divide-y divide-slate-100">
+        <h1 class="font-display text-2xl font-bold text-zinc-900 dark:text-white mb-2">Apa yang paling penting buat kamu?</h1>
+        <p class="text-zinc-500 dark:text-zinc-400 mb-6">Pilih satu faktor utama — AI akan menimbang faktor ini lebih besar dibanding lainnya saat menyusun rekomendasi.</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {% for value, label, subtitle in priority_options %}
+          <label class="block cursor-pointer">
+            <input class="peer sr-only" type="radio" name="priority" value="{{ value }}" {% if selected_priority == value %}checked{% endif %}>
+            <div class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-3.5 transition-colors hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 peer-checked:bg-accent-50 peer-checked:ring-2 peer-checked:ring-accent-500/20 dark:peer-checked:bg-accent-950/40 dark:peer-checked:border-accent-400">
+              <span class="font-semibold text-zinc-900 dark:text-white">{{ label }}</span>
+              <span class="block text-xs text-zinc-400 dark:text-zinc-500 mt-1">{{ subtitle }}</span>
+            </div>
+          </label>
+          {% endfor %}
+          <label class="block cursor-pointer sm:col-span-2">
+            <input class="peer sr-only" type="radio" name="priority" value="" {% if not selected_priority %}checked{% endif %}>
+            <div class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-3.5 transition-colors hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 peer-checked:bg-accent-50 peer-checked:ring-2 peer-checked:ring-accent-500/20 dark:peer-checked:bg-accent-950/40 dark:peer-checked:border-accent-400">
+              <span class="font-semibold text-zinc-900 dark:text-white">Semua faktor sama penting</span>
+              <span class="block text-xs text-zinc-400 dark:text-zinc-500 mt-1">Gunakan bobot seimbang seperti biasa</span>
+            </div>
+          </label>
+        </div>
+      </div>
+
+    {% elif step == 9 %}
+      <div>
+        <h1 class="font-display text-2xl font-bold text-zinc-900 dark:text-white mb-2">Ini preferensi kamu — sudah sesuai?</h1>
+        <p class="text-zinc-500 dark:text-zinc-400 mb-6">Pastikan preferensi di bawah ini sudah sesuai sebelum kami mencarikan rekomendasi.</p>
+        <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl divide-y divide-zinc-100 dark:divide-zinc-800">
           {% for label, value in summary.items %}
           <div class="flex justify-between px-6 py-4">
-            <span class="text-slate-500">{{ label }}</span>
-            <span class="font-semibold text-slate-900">{{ value }}</span>
+            <span class="text-zinc-500 dark:text-zinc-400">{{ label }}</span>
+            <span class="font-semibold text-zinc-900 dark:text-white">{{ value }}</span>
           </div>
           {% endfor %}
         </div>
@@ -219,34 +244,17 @@
 
     <div class="flex items-center justify-between pt-4">
       {% if step > 1 %}
-        <a href="{% url 'wizard_step' step=prev_step %}" class="text-slate-500 hover:text-slate-800 font-medium px-6 py-3">
-          &larr; {% if step == 8 %}Ubah Preferensi{% else %}Kembali{% endif %}
+        <a href="{% url 'wizard_step' step=prev_step %}" class="text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-100 font-medium px-6 py-3 transition-colors">
+          &larr; {% if step == 9 %}Ubah Preferensi{% else %}Kembali{% endif %}
         </a>
       {% else %}
         <span></span>
       {% endif %}
 
-      <button type="submit" class="bg-accent hover:bg-accent-dark text-white font-semibold px-8 py-3 rounded-full shadow-sm transition">
-        {% if step == 8 %}Cari Rekomendasi Terbaik &rarr;{% else %}Lanjut &rarr;{% endif %}
+      <button type="submit" class="bg-accent-600 hover:bg-accent-700 text-white font-semibold px-8 py-3 rounded-full shadow-sm shadow-accent-600/20 transition-colors">
+        {% if step == 9 %}Cari Rekomendasi Terbaik &rarr;{% else %}Lanjut &rarr;{% endif %}
       </button>
     </div>
   </form>
 </section>
-
-<style>
-  .option-card { display: block; cursor: pointer; }
-  .option-card input { position: absolute; opacity: 0; pointer-events: none; }
-  .option-card-body {
-    border: 1px solid #e2e8f0;
-    border-radius: 1rem;
-    padding: 1rem 1.25rem;
-    transition: all .15s ease;
-    background: white;
-  }
-  .option-card input:checked + .option-card-body {
-    border-color: #2563EB;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-    background: #eff6ff;
-  }
-</style>
 {% endblock %}

@@ -1,22 +1,24 @@
 {% extends 'base.html' %}
 
-{% block title %}SmartPick — Temukan iPhone Bekas Terbaik Untukmu{% endblock %}
+{% block title %}iRecom Master — Temukan iPhone Bekas Terbaik Untukmu{% endblock %}
 
 {% block content %}
 <section class="max-w-3xl mx-auto px-6 pt-20 pb-16 text-center">
-  <p class="text-accent font-semibold text-sm tracking-wide uppercase mb-3">Sistem Rekomendasi berbasis AI</p>
-  <h1 class="text-4xl sm:text-5xl font-extrabold text-slate-900 leading-tight mb-4">
+  <p class="inline-flex items-center gap-1.5 text-accent-700 dark:text-accent-400 font-semibold text-xs tracking-wide uppercase mb-4 bg-accent-50 dark:bg-accent-950/50 border border-accent-100 dark:border-accent-700/40 rounded-full px-3 py-1">
+    Sistem Rekomendasi berbasis AI
+  </p>
+  <h1 class="font-display text-4xl sm:text-5xl font-bold text-zinc-900 dark:text-white leading-tight mb-4 tracking-tight">
     Temukan iPhone Bekas Terbaik Untukmu
   </h1>
-  <p class="text-slate-500 text-lg mb-10">
-    Jawab 8 pertanyaan singkat, dapatkan 3 rekomendasi terbaik lengkap dengan link pembelian langsung.
+  <p class="text-zinc-500 dark:text-zinc-400 text-lg mb-10">
+    Jawab 9 pertanyaan singkat, dapatkan 3 rekomendasi terbaik lengkap dengan link pembelian langsung.
   </p>
 
   <form method="post" action="{% url 'wizard_start' %}">
     {% csrf_token %}
     <button
       type="submit"
-      class="bg-accent hover:bg-accent-dark text-white font-semibold px-8 py-4 rounded-full shadow-sm transition text-lg"
+      class="bg-accent-600 hover:bg-accent-700 text-white font-semibold px-8 py-4 rounded-full shadow-sm shadow-accent-600/20 transition-colors text-lg"
     >
       Mulai Temukan iPhone Saya &rarr;
     </button>
@@ -25,20 +27,20 @@
 
 <section class="max-w-4xl mx-auto px-6 pb-24">
   <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-    <div class="bg-white rounded-2xl border border-slate-200 p-6 text-center">
-      <div class="w-10 h-10 mx-auto mb-4 rounded-full bg-blue-50 text-accent flex items-center justify-center font-bold">1</div>
-      <h3 class="font-semibold text-slate-900 mb-1">Pilih Preferensi</h3>
-      <p class="text-sm text-slate-500">Jawab 8 pertanyaan singkat tentang iPhone bekas idaman kamu.</p>
+    <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6 text-center">
+      <div class="w-10 h-10 mx-auto mb-4 rounded-full bg-accent-50 dark:bg-accent-950/60 text-accent-700 dark:text-accent-400 flex items-center justify-center font-bold">1</div>
+      <h3 class="font-semibold text-zinc-900 dark:text-white mb-1">Pilih Preferensi</h3>
+      <p class="text-sm text-zinc-500 dark:text-zinc-400">Jawab 9 pertanyaan singkat tentang iPhone bekas idaman kamu.</p>
     </div>
-    <div class="bg-white rounded-2xl border border-slate-200 p-6 text-center">
-      <div class="w-10 h-10 mx-auto mb-4 rounded-full bg-blue-50 text-accent flex items-center justify-center font-bold">2</div>
-      <h3 class="font-semibold text-slate-900 mb-1">AI Analisis</h3>
-      <p class="text-sm text-slate-500">Engine BM25 + Value Score mencocokkan preferensimu dengan ratusan listing.</p>
+    <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6 text-center">
+      <div class="w-10 h-10 mx-auto mb-4 rounded-full bg-accent-50 dark:bg-accent-950/60 text-accent-700 dark:text-accent-400 flex items-center justify-center font-bold">2</div>
+      <h3 class="font-semibold text-zinc-900 dark:text-white mb-1">AI Analisis</h3>
+      <p class="text-sm text-zinc-500 dark:text-zinc-400">Engine BM25 + Value Score mencocokkan preferensimu dengan ratusan listing.</p>
     </div>
-    <div class="bg-white rounded-2xl border border-slate-200 p-6 text-center">
-      <div class="w-10 h-10 mx-auto mb-4 rounded-full bg-blue-50 text-accent flex items-center justify-center font-bold">3</div>
-      <h3 class="font-semibold text-slate-900 mb-1">Dapatkan Rekomendasi</h3>
-      <p class="text-sm text-slate-500">Dapatkan 3 listing terbaik lengkap dengan alasan & link beli.</p>
+    <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6 text-center">
+      <div class="w-10 h-10 mx-auto mb-4 rounded-full bg-accent-50 dark:bg-accent-950/60 text-accent-700 dark:text-accent-400 flex items-center justify-center font-bold">3</div>
+      <h3 class="font-semibold text-zinc-900 dark:text-white mb-1">Dapatkan Rekomendasi</h3>
+      <p class="text-sm text-zinc-500 dark:text-zinc-400">Dapatkan 3 listing terbaik lengkap dengan alasan & link beli.</p>
     </div>
   </div>
 </section>

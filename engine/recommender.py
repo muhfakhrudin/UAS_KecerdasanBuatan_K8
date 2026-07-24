@@ -15,7 +15,9 @@ Alur:
    Jika hasil filter kosong, relaksasi kondisi & garansi lalu filter ulang.
 3. BM25 scoring pada corpus yang sudah terfilter
 4. ValueScore dengan bobot adaptif (calculate_adaptive_weights)
-5. Final score = 0.55 * bm25_normalized + 0.45 * value_score
+5. Final score = 0.55 * bm25_normalized + 0.45 * value_score;
+   bobot dipindah seluruhnya ke ValueScore (1.0) saat BM25 tidak aktif
+   (query kosong / tidak ada token yang cocok), lihat _score_and_rank
 6. Return top 3 dengan breakdown skor per dimensi + generate_reason()
 """
 
@@ -34,9 +36,31 @@ BH_LABEL = {
 
 BASE_WEIGHTS = {'bh': 0.30, 'gen': 0.25, 'kondisi': 0.20, 'price': 0.15, 'trust': 0.10}
 
+# Bobot yang diberikan ke dimensi yang dipilih user sebagai "Prioritas Utama"
+# (wizard step 8); sisanya (1 - PRIORITY_BOOST) dibagi proporsional ke empat
+# dimensi lain sesuai rasio BASE_WEIGHTS. Dipilih eksplisit oleh user, sehingga
+# menggantikan (bukan menambah) penyesuaian otomatis di bawah -- user yang
+# sudah menyatakan prioritasnya tidak perlu ditebak lagi lewat heuristik.
+PRIORITY_BOOST = 0.50
+
+
+def _boost_priority(priority: str) -> dict:
+    others = {k: v for k, v in BASE_WEIGHTS.items() if k != priority}
+    others_total = sum(others.values())
+    remaining = 1 - PRIORITY_BOOST
+    weights = {k: (v / others_total) * remaining for k, v in others.items()}
+    weights[priority] = PRIORITY_BOOST
+    return weights
+
 
 def calculate_adaptive_weights(session_data: dict) -> dict:
-    """Hitung bobot ValueScore berdasarkan jawaban wizard (varian, garansi, budget)."""
+    """Hitung bobot ValueScore berdasarkan jawaban wizard (prioritas, varian, garansi, budget)."""
+    priority = session_data.get('priority')
+    if priority in BASE_WEIGHTS:
+        weights = _boost_priority(priority)
+        total = sum(weights.values())
+        return {k: v / total for k, v in weights.items()}
+
     weights = dict(BASE_WEIGHTS)
 
     if session_data.get('price_weight_zero'):
@@ -107,6 +131,10 @@ def _filtered_listings(session_data: dict):
     return listings, True
 
 
+BM25_WEIGHT = 0.55
+VALUE_WEIGHT = 0.45
+
+
 def _score_and_rank(listings, session_data: dict) -> list:
     query = session_data.get('query', '')
     weights = session_data.get('weights') or calculate_adaptive_weights(session_data)
@@ -116,12 +144,25 @@ def _score_and_rank(listings, session_data: dict) -> list:
     bm25_scores = bm25.score(query, listing_ids)
     max_bm25 = max(bm25_scores.values()) if bm25_scores else 0.0
 
+    # Wizard saat ini tidak menjaring kueri bebas, sehingga
+    # BM25 selalu bernilai nol untuk seluruh kandidat. Menghitung tetap dengan
+    # bobot 0,55/0,45 pada kondisi itu akan memotong final_score maksimal ke
+    # 0,45 -- match% jadi terkompresi ke rentang sempit dan seolah statis,
+    # padahal ValueScore (termasuk komponen fuzzy dan Prioritas Utama) sudah
+    # membedakan kandidat dengan baik. Saat BM25 tidak aktif, bobotnya
+    # dipindahkan seluruhnya ke ValueScore; begitu kolom kueri bebas tersedia
+    # dan BM25 kembali bernilai non-nol, split 0,55/0,45 pada Persamaan 6
+    # otomatis berlaku lagi.
+    bm25_active = max_bm25 > 0
+    bm25_weight = BM25_WEIGHT if bm25_active else 0.0
+    value_weight = VALUE_WEIGHT if bm25_active else 1.0
+
     results = []
     for listing in listings:
         bm25_raw = bm25_scores.get(listing.id, 0.0)
         bm25_norm = (bm25_raw / max_bm25) if max_bm25 > 0 else 0.0
         value_score = calculate_value_score(listing, weights)
-        final_score = 0.55 * bm25_norm + 0.45 * value_score
+        final_score = bm25_weight * bm25_norm + value_weight * value_score
 
         results.append({
             'listing': listing,

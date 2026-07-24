@@ -2,8 +2,16 @@
 Hitung ValueScore per listing berdasarkan bobot adaptif dari intent + dialog.
 
 Formula:
-ValueScore = (bh_norm * w_bh) + (gen_norm * w_gen) + (kondisi_norm * w_kondisi) +
-             (price_eff * w_price) + (trust * w_trust)
+ValueScore = (FuzzyQuality(bh, price_eff, trust) * w_fuzzy) +
+             (kondisi_norm * w_kondisi) + (gen_norm * w_gen)
+dengan w_fuzzy = w_bh + w_price + w_trust.
+
+FuzzyQuality dihitung oleh fuzzy_engine.infer_quality (Mamdani FIS) karena
+battery health, efisiensi harga, dan trust toko adalah tiga variabel yang
+batasnya samar (mis. BH 84% vs 86% praktis setara secara persepsi pembeli),
+sehingga digabungkan lewat basis aturan fuzzy, bukan penjumlahan linear.
+Kondisi fisik dan generasi tetap berupa atribut kategorikal/ordinal yang
+batasnya tegas, sehingga tetap dihitung sebagai suku berbobot biasa.
 
 Bobot default (spec_first mode — tidak peduli harga):
   w_bh=0.35, w_gen=0.30, w_kondisi=0.20, w_price=0.00, w_trust=0.15
@@ -13,6 +21,8 @@ Bobot budget_first mode:
 """
 
 from functools import lru_cache
+
+from .fuzzy_engine import infer_quality
 
 KONDISI_SCORE = {'like_new': 1.0, 'mulus': 0.8, 'normal': 0.5, 'bekas': 0.2, 'unknown': 0.4}
 
@@ -60,7 +70,6 @@ def _normalize(value, lo, hi):
 
 def calculate(listing, weights: dict) -> float:
     bh = listing.battery_health if listing.battery_health is not None else 0.0
-    bh_norm = max(0.0, min(1.0, bh / 100))
 
     gen_norm = _normalize(listing.generasi, GENERASI_MIN, GENERASI_MAX)
     kondisi_norm = KONDISI_SCORE.get(listing.kondisi, 0.4)
@@ -71,11 +80,12 @@ def calculate(listing, weights: dict) -> float:
 
     trust = max(0.0, min(1.0, listing.trust_score))
 
+    fuzzy_quality = infer_quality(bh, price_eff, trust)
+    w_fuzzy = weights.get('bh', 0.0) + weights.get('price', 0.0) + weights.get('trust', 0.0)
+
     score = (
-        bh_norm * weights.get('bh', 0.0)
-        + gen_norm * weights.get('gen', 0.0)
+        fuzzy_quality * w_fuzzy
         + kondisi_norm * weights.get('kondisi', 0.0)
-        + price_eff * weights.get('price', 0.0)
-        + trust * weights.get('trust', 0.0)
+        + gen_norm * weights.get('gen', 0.0)
     )
     return round(max(0.0, min(1.0, score)), 4)

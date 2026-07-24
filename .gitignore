@@ -1,1 +1,22 @@
-/.venv
+# Virtual Environment
+.venv/
+venv/
+env/
+
+# Python / Django Cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Django Database & Secrets
+db.sqlite3
+db.sqlite3-journal
+.env
+
+# Logs & Debug
+*.log
+logs/
+
+# Editor / IDE Config
+.vscode/
+.idea/
