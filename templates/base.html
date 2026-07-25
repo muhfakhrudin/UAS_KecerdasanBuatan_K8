@@ -48,6 +48,8 @@
 </head>
 <body class="min-h-screen bg-zinc-50 text-zinc-800 dark:bg-zinc-950 dark:text-zinc-200 flex flex-col transition-colors duration-200">
 
+<canvas id="cursor-trail" class="fixed inset-0 pointer-events-none z-[9999]" aria-hidden="true"></canvas>
+
 <header class="border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/80 backdrop-blur sticky top-0 z-10">
   <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
     <a href="{% url 'index' %}" class="flex items-baseline gap-2">
@@ -89,6 +91,187 @@
     root.classList.toggle('dark');
     localStorage.setItem('theme', root.classList.contains('dark') ? 'dark' : 'light');
   });
+</script>
+
+<script>
+  (function () {
+    var canHover = window.matchMedia('(pointer: fine)').matches;
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var canvas = document.getElementById('cursor-trail');
+    if (!canHover || reduceMotion || !canvas) return;
+
+    var ctx = canvas.getContext('2d');
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var width, height;
+
+    function resize() {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      canvas.style.width = width + 'px';
+      canvas.style.height = height + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    var nodes = [];
+    var maxNodes = 70;
+    var maxDist = 90;
+    var lastX = null, lastY = null;
+    var mouseX = width / 2, mouseY = height / 2;
+    var headX = mouseX, headY = mouseY;
+    var active = false;
+    var lastTime = performance.now();
+
+    window.addEventListener('mousemove', function (e) {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      active = true;
+
+      if (lastX === null) {
+        lastX = mouseX;
+        lastY = mouseY;
+        headX = mouseX;
+        headY = mouseY;
+      }
+      var dx = mouseX - lastX;
+      var dy = mouseY - lastY;
+      var dist = Math.hypot(dx, dy);
+      var minSpacing = 6;
+
+      if (dist >= minSpacing) {
+        var steps = Math.min(Math.ceil(dist / minSpacing), 10);
+        for (var i = 1; i <= steps; i++) {
+          var t = i / steps;
+          nodes.push({
+            x: lastX + dx * t,
+            y: lastY + dy * t,
+            life: 1,
+          });
+        }
+        if (nodes.length > maxNodes) {
+          nodes.splice(0, nodes.length - maxNodes);
+        }
+        lastX = mouseX;
+        lastY = mouseY;
+      }
+    });
+
+    document.addEventListener('mouseleave', function () {
+      active = false;
+    });
+
+    function isDark() {
+      return document.documentElement.classList.contains('dark');
+    }
+
+    function easeOut(t) {
+      return 1 - (1 - t) * (1 - t);
+    }
+
+    function drawSmoothSpine(points, colorRgb) {
+      if (points.length < 3) return;
+      for (var i = 1; i < points.length - 1; i++) {
+        var prev = points[i - 1];
+        var curr = points[i];
+        var next = points[i + 1];
+        var startX = (prev.x + curr.x) / 2;
+        var startY = (prev.y + curr.y) / 2;
+        var endX = (curr.x + next.x) / 2;
+        var endY = (curr.y + next.y) / 2;
+        var eased = easeOut(Math.min(curr.life, next.life));
+        var alpha = eased * 0.85;
+        if (alpha <= 0.015) continue;
+        ctx.strokeStyle = 'rgba(' + colorRgb + ',' + alpha + ')';
+        ctx.lineWidth = 0.8 + eased * 2.6;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(startX, startY);
+        ctx.quadraticCurveTo(curr.x, curr.y, endX, endY);
+        ctx.stroke();
+      }
+    }
+
+    function draw() {
+      var now = performance.now();
+      var dt = Math.min((now - lastTime) / 16.67, 3);
+      lastTime = now;
+
+      ctx.clearRect(0, 0, width, height);
+
+      headX += (mouseX - headX) * Math.min(0.35 * dt, 1);
+      headY += (mouseY - headY) * Math.min(0.35 * dt, 1);
+
+      for (var i = nodes.length - 1; i >= 0; i--) {
+        nodes[i].life -= 0.024 * dt;
+        if (nodes[i].life <= 0) nodes.splice(i, 1);
+      }
+
+      var dark = isDark();
+      var lineColor = dark ? '45, 212, 191' : '13, 148, 136';
+      var dotColor = dark ? '94, 234, 212' : '15, 118, 110';
+
+      // flowing trail spine (smoothed, tapered, fading)
+      drawSmoothSpine(nodes.concat([{ x: headX, y: headY, life: 1 }]), lineColor);
+
+      // constellation mesh between nearby recent nodes
+      var meshStart = Math.max(0, nodes.length - 26);
+      for (var a = meshStart; a < nodes.length; a++) {
+        for (var b = a + 1; b < nodes.length; b++) {
+          var n1 = nodes[a], n2 = nodes[b];
+          var d = Math.hypot(n1.x - n2.x, n1.y - n2.y);
+          if (d < maxDist) {
+            var alpha = (1 - d / maxDist) * easeOut(Math.min(n1.life, n2.life)) * 0.32;
+            if (alpha > 0.02) {
+              ctx.strokeStyle = 'rgba(' + lineColor + ',' + alpha + ')';
+              ctx.lineWidth = 0.8;
+              ctx.beginPath();
+              ctx.moveTo(n1.x, n1.y);
+              ctx.lineTo(n2.x, n2.y);
+              ctx.stroke();
+            }
+          }
+        }
+      }
+
+      for (var ni = nodes.length - 1; ni >= 0; ni -= 5) {
+        var n = nodes[ni];
+        var eased2 = easeOut(n.life);
+        var r = 0.6 + eased2 * 1.1;
+        ctx.beginPath();
+        ctx.fillStyle = 'rgba(' + dotColor + ',' + eased2 * 0.5 + ')';
+        ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      if (active) {
+        ctx.beginPath();
+        ctx.fillStyle = 'rgba(' + dotColor + ', 0.95)';
+        ctx.arc(headX, headY, 3, 0, Math.PI * 2);
+        ctx.fill();
+
+        var count = 0;
+        for (var k = nodes.length - 1; k >= 0 && count < 6; k--, count++) {
+          var n2 = nodes[k];
+          var dd = Math.hypot(n2.x - headX, n2.y - headY);
+          if (dd < maxDist * 1.3) {
+            var a2 = (1 - dd / (maxDist * 1.3)) * easeOut(n2.life) * 0.6;
+            ctx.strokeStyle = 'rgba(' + lineColor + ',' + a2 + ')';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(headX, headY);
+            ctx.lineTo(n2.x, n2.y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      requestAnimationFrame(draw);
+    }
+    requestAnimationFrame(draw);
+  })();
 </script>
 
 </body>
