@@ -32,20 +32,40 @@
         <p class="text-zinc-500 dark:text-zinc-400 mb-6">Pilih salah satu, atau biarkan AI yang memilihkan.</p>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {% for value, label, subtitle in seri_options %}
-          <label class="block cursor-pointer">
+          <label class="group/card relative block cursor-pointer">
             <input class="peer sr-only" type="radio" name="seri" value="{{ value }}" {% if selected_seri == value %}checked{% endif %}>
-            <div class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-3.5 transition-colors hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 peer-checked:bg-accent-50 peer-checked:ring-2 peer-checked:ring-accent-500/20 dark:peer-checked:bg-accent-950/40 dark:peer-checked:border-accent-400">
+            <div class="relative overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800/90 bg-white dark:bg-zinc-900/70 px-4 py-3.5 transition-all hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 dark:peer-checked:border-accent-400/80 peer-checked:ring-1 peer-checked:ring-accent-500/40 dark:peer-checked:ring-accent-400/30 peer-checked:bg-accent-50/70 dark:peer-checked:bg-zinc-900">
+              <svg class="pointer-events-none absolute -bottom-2 -right-2 w-14 h-14 text-zinc-100 dark:text-zinc-800/70" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                <rect x="4" y="4" width="40" height="40" rx="12" stroke="currentColor" stroke-width="2" />
+                <circle cx="18" cy="18" r="6" stroke="currentColor" stroke-width="2" />
+                <circle cx="32" cy="30" r="4.5" stroke="currentColor" stroke-width="2" />
+              </svg>
               <span class="font-semibold text-zinc-900 dark:text-white">{{ label }}</span>
               <span class="block text-xs text-zinc-400 dark:text-zinc-500 mt-1">{{ subtitle }}</span>
             </div>
+            <span class="hidden peer-checked:flex absolute top-2.5 right-2.5 items-center justify-center w-5 h-5 rounded-md bg-accent-500 dark:bg-accent-400 text-white dark:text-zinc-950 shadow-sm">
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+            </span>
           </label>
           {% endfor %}
-          <label class="block cursor-pointer">
+          <label class="group/card relative block cursor-pointer">
             <input class="peer sr-only" type="radio" name="seri" value="" {% if not selected_seri %}checked{% endif %}>
-            <div class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-3.5 transition-colors hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 peer-checked:bg-accent-50 peer-checked:ring-2 peer-checked:ring-accent-500/20 dark:peer-checked:bg-accent-950/40 dark:peer-checked:border-accent-400">
+            <div class="relative overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800/90 bg-white dark:bg-zinc-900/70 px-4 py-3.5 transition-all hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 dark:peer-checked:border-accent-400/80 peer-checked:ring-1 peer-checked:ring-accent-500/40 dark:peer-checked:ring-accent-400/30 peer-checked:bg-accent-50/70 dark:peer-checked:bg-zinc-900">
+              <svg class="pointer-events-none absolute -bottom-2 -right-2 w-14 h-14 text-zinc-100 dark:text-zinc-800/70" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                <rect x="4" y="4" width="40" height="40" rx="12" stroke="currentColor" stroke-width="2" />
+                <circle cx="18" cy="18" r="6" stroke="currentColor" stroke-width="2" />
+                <circle cx="32" cy="30" r="4.5" stroke="currentColor" stroke-width="2" />
+              </svg>
               <span class="font-semibold text-zinc-900 dark:text-white">Semua Seri</span>
               <span class="block text-xs text-zinc-400 dark:text-zinc-500 mt-1">Biarkan AI yang memilihkan</span>
             </div>
+            <span class="hidden peer-checked:flex absolute top-2.5 right-2.5 items-center justify-center w-5 h-5 rounded-md bg-accent-500 dark:bg-accent-400 text-white dark:text-zinc-950 shadow-sm">
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+            </span>
           </label>
         </div>
       </div>
@@ -61,20 +81,40 @@
         {% endif %}
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {% for value, label, subtitle in varian_options %}
-          <label class="block cursor-pointer">
+          <label class="group/card relative block cursor-pointer">
             <input class="peer sr-only" type="radio" name="varian" value="{{ value }}" {% if selected_varian == value %}checked{% endif %}>
-            <div class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-3.5 transition-colors hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 peer-checked:bg-accent-50 peer-checked:ring-2 peer-checked:ring-accent-500/20 dark:peer-checked:bg-accent-950/40 dark:peer-checked:border-accent-400">
+            <div class="relative overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800/90 bg-white dark:bg-zinc-900/70 px-4 py-3.5 transition-all hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 dark:peer-checked:border-accent-400/80 peer-checked:ring-1 peer-checked:ring-accent-500/40 dark:peer-checked:ring-accent-400/30 peer-checked:bg-accent-50/70 dark:peer-checked:bg-zinc-900">
+              <svg class="pointer-events-none absolute -bottom-2 -right-2 w-14 h-14 text-zinc-100 dark:text-zinc-800/70" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                <rect x="4" y="4" width="40" height="40" rx="12" stroke="currentColor" stroke-width="2" />
+                <circle cx="18" cy="18" r="6" stroke="currentColor" stroke-width="2" />
+                <circle cx="32" cy="30" r="4.5" stroke="currentColor" stroke-width="2" />
+              </svg>
               <span class="font-semibold text-zinc-900 dark:text-white">{{ label }}</span>
               <span class="block text-xs text-zinc-400 dark:text-zinc-500 mt-1">{{ subtitle }}</span>
             </div>
+            <span class="hidden peer-checked:flex absolute top-2.5 right-2.5 items-center justify-center w-5 h-5 rounded-md bg-accent-500 dark:bg-accent-400 text-white dark:text-zinc-950 shadow-sm">
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+            </span>
           </label>
           {% endfor %}
-          <label class="block cursor-pointer">
+          <label class="group/card relative block cursor-pointer">
             <input class="peer sr-only" type="radio" name="varian" value="" {% if not selected_varian %}checked{% endif %}>
-            <div class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-3.5 transition-colors hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 peer-checked:bg-accent-50 peer-checked:ring-2 peer-checked:ring-accent-500/20 dark:peer-checked:bg-accent-950/40 dark:peer-checked:border-accent-400">
+            <div class="relative overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800/90 bg-white dark:bg-zinc-900/70 px-4 py-3.5 transition-all hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 dark:peer-checked:border-accent-400/80 peer-checked:ring-1 peer-checked:ring-accent-500/40 dark:peer-checked:ring-accent-400/30 peer-checked:bg-accent-50/70 dark:peer-checked:bg-zinc-900">
+              <svg class="pointer-events-none absolute -bottom-2 -right-2 w-14 h-14 text-zinc-100 dark:text-zinc-800/70" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                <rect x="4" y="4" width="40" height="40" rx="12" stroke="currentColor" stroke-width="2" />
+                <circle cx="18" cy="18" r="6" stroke="currentColor" stroke-width="2" />
+                <circle cx="32" cy="30" r="4.5" stroke="currentColor" stroke-width="2" />
+              </svg>
               <span class="font-semibold text-zinc-900 dark:text-white">Semua Varian</span>
               <span class="block text-xs text-zinc-400 dark:text-zinc-500 mt-1">Tampilkan semua pilihan</span>
             </div>
+            <span class="hidden peer-checked:flex absolute top-2.5 right-2.5 items-center justify-center w-5 h-5 rounded-md bg-accent-500 dark:bg-accent-400 text-white dark:text-zinc-950 shadow-sm">
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+            </span>
           </label>
         </div>
       </div>
@@ -85,20 +125,40 @@
         <p class="text-zinc-500 dark:text-zinc-400 mb-6">Pilih rentang harga yang sesuai dengan kantongmu.</p>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {% for key, label, subtitle, lo, hi in harga_options %}
-          <label class="block cursor-pointer">
+          <label class="group/card relative block cursor-pointer">
             <input class="peer sr-only" type="radio" name="harga" value="{{ key }}" {% if selected_harga == key %}checked{% endif %}>
-            <div class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-3.5 transition-colors hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 peer-checked:bg-accent-50 peer-checked:ring-2 peer-checked:ring-accent-500/20 dark:peer-checked:bg-accent-950/40 dark:peer-checked:border-accent-400">
+            <div class="relative overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800/90 bg-white dark:bg-zinc-900/70 px-4 py-3.5 transition-all hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 dark:peer-checked:border-accent-400/80 peer-checked:ring-1 peer-checked:ring-accent-500/40 dark:peer-checked:ring-accent-400/30 peer-checked:bg-accent-50/70 dark:peer-checked:bg-zinc-900">
+              <svg class="pointer-events-none absolute -bottom-2 -right-2 w-14 h-14 text-zinc-100 dark:text-zinc-800/70" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                <rect x="4" y="4" width="40" height="40" rx="12" stroke="currentColor" stroke-width="2" />
+                <circle cx="18" cy="18" r="6" stroke="currentColor" stroke-width="2" />
+                <circle cx="32" cy="30" r="4.5" stroke="currentColor" stroke-width="2" />
+              </svg>
               <span class="font-semibold text-zinc-900 dark:text-white">{{ label }}</span>
               <span class="block text-xs text-zinc-400 dark:text-zinc-500 mt-1">{{ subtitle }}</span>
             </div>
+            <span class="hidden peer-checked:flex absolute top-2.5 right-2.5 items-center justify-center w-5 h-5 rounded-md bg-accent-500 dark:bg-accent-400 text-white dark:text-zinc-950 shadow-sm">
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+            </span>
           </label>
           {% endfor %}
-          <label class="block cursor-pointer sm:col-span-2">
+          <label class="group/card relative block cursor-pointer sm:col-span-2">
             <input class="peer sr-only" type="radio" name="harga" value="{{ harga_any_key }}" {% if not selected_harga or selected_harga == harga_any_key %}checked{% endif %}>
-            <div class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-3.5 transition-colors hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 peer-checked:bg-accent-50 peer-checked:ring-2 peer-checked:ring-accent-500/20 dark:peer-checked:bg-accent-950/40 dark:peer-checked:border-accent-400">
+            <div class="relative overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800/90 bg-white dark:bg-zinc-900/70 px-4 py-3.5 transition-all hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 dark:peer-checked:border-accent-400/80 peer-checked:ring-1 peer-checked:ring-accent-500/40 dark:peer-checked:ring-accent-400/30 peer-checked:bg-accent-50/70 dark:peer-checked:bg-zinc-900">
+              <svg class="pointer-events-none absolute -bottom-2 -right-2 w-14 h-14 text-zinc-100 dark:text-zinc-800/70" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                <rect x="4" y="4" width="40" height="40" rx="12" stroke="currentColor" stroke-width="2" />
+                <circle cx="18" cy="18" r="6" stroke="currentColor" stroke-width="2" />
+                <circle cx="32" cy="30" r="4.5" stroke="currentColor" stroke-width="2" />
+              </svg>
               <span class="font-semibold text-zinc-900 dark:text-white">Tidak ada batasan harga — tampilkan yang terbaik</span>
               <span class="block text-xs text-zinc-400 dark:text-zinc-500 mt-1">AI pilihkan yang value terbaik</span>
             </div>
+            <span class="hidden peer-checked:flex absolute top-2.5 right-2.5 items-center justify-center w-5 h-5 rounded-md bg-accent-500 dark:bg-accent-400 text-white dark:text-zinc-950 shadow-sm">
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+            </span>
           </label>
         </div>
       </div>
@@ -109,20 +169,40 @@
         <p class="text-zinc-500 dark:text-zinc-400 mb-6">Kami akan cari listing dengan storage sama atau lebih besar.</p>
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {% for gb, label, subtitle in storage_options %}
-          <label class="block cursor-pointer">
+          <label class="group/card relative block cursor-pointer">
             <input class="peer sr-only" type="radio" name="storage_min" value="{{ gb }}" {% if selected_storage == gb %}checked{% endif %}>
-            <div class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-3.5 transition-colors hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 peer-checked:bg-accent-50 peer-checked:ring-2 peer-checked:ring-accent-500/20 dark:peer-checked:bg-accent-950/40 dark:peer-checked:border-accent-400">
+            <div class="relative overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800/90 bg-white dark:bg-zinc-900/70 px-4 py-3.5 transition-all hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 dark:peer-checked:border-accent-400/80 peer-checked:ring-1 peer-checked:ring-accent-500/40 dark:peer-checked:ring-accent-400/30 peer-checked:bg-accent-50/70 dark:peer-checked:bg-zinc-900">
+              <svg class="pointer-events-none absolute -bottom-2 -right-2 w-14 h-14 text-zinc-100 dark:text-zinc-800/70" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                <rect x="4" y="4" width="40" height="40" rx="12" stroke="currentColor" stroke-width="2" />
+                <circle cx="18" cy="18" r="6" stroke="currentColor" stroke-width="2" />
+                <circle cx="32" cy="30" r="4.5" stroke="currentColor" stroke-width="2" />
+              </svg>
               <span class="font-semibold text-zinc-900 dark:text-white">{{ label }}</span>
               <span class="block text-xs text-zinc-400 dark:text-zinc-500 mt-1">{{ subtitle }}</span>
             </div>
+            <span class="hidden peer-checked:flex absolute top-2.5 right-2.5 items-center justify-center w-5 h-5 rounded-md bg-accent-500 dark:bg-accent-400 text-white dark:text-zinc-950 shadow-sm">
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+            </span>
           </label>
           {% endfor %}
-          <label class="block cursor-pointer">
+          <label class="group/card relative block cursor-pointer">
             <input class="peer sr-only" type="radio" name="storage_min" value="" {% if not selected_storage %}checked{% endif %}>
-            <div class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-3.5 transition-colors hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 peer-checked:bg-accent-50 peer-checked:ring-2 peer-checked:ring-accent-500/20 dark:peer-checked:bg-accent-950/40 dark:peer-checked:border-accent-400">
+            <div class="relative overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800/90 bg-white dark:bg-zinc-900/70 px-4 py-3.5 transition-all hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 dark:peer-checked:border-accent-400/80 peer-checked:ring-1 peer-checked:ring-accent-500/40 dark:peer-checked:ring-accent-400/30 peer-checked:bg-accent-50/70 dark:peer-checked:bg-zinc-900">
+              <svg class="pointer-events-none absolute -bottom-2 -right-2 w-14 h-14 text-zinc-100 dark:text-zinc-800/70" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                <rect x="4" y="4" width="40" height="40" rx="12" stroke="currentColor" stroke-width="2" />
+                <circle cx="18" cy="18" r="6" stroke="currentColor" stroke-width="2" />
+                <circle cx="32" cy="30" r="4.5" stroke="currentColor" stroke-width="2" />
+              </svg>
               <span class="font-semibold text-zinc-900 dark:text-white">Tidak masalah</span>
               <span class="block text-xs text-zinc-400 dark:text-zinc-500 mt-1">AI pilihkan storage terbaik di budget kamu</span>
             </div>
+            <span class="hidden peer-checked:flex absolute top-2.5 right-2.5 items-center justify-center w-5 h-5 rounded-md bg-accent-500 dark:bg-accent-400 text-white dark:text-zinc-950 shadow-sm">
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+            </span>
           </label>
         </div>
       </div>
@@ -133,20 +213,40 @@
         <p class="text-zinc-500 dark:text-zinc-400 mb-6">Listing dengan BH di bawah angka ini tidak akan ditampilkan.</p>
         <div class="grid grid-cols-2 gap-3">
           {% for value, label, subtitle in bh_options %}
-          <label class="block cursor-pointer">
+          <label class="group/card relative block cursor-pointer">
             <input class="peer sr-only" type="radio" name="bh_min" value="{{ value }}" {% if selected_bh == value %}checked{% endif %}>
-            <div class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-3.5 transition-colors hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 peer-checked:bg-accent-50 peer-checked:ring-2 peer-checked:ring-accent-500/20 dark:peer-checked:bg-accent-950/40 dark:peer-checked:border-accent-400">
+            <div class="relative overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800/90 bg-white dark:bg-zinc-900/70 px-4 py-3.5 transition-all hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 dark:peer-checked:border-accent-400/80 peer-checked:ring-1 peer-checked:ring-accent-500/40 dark:peer-checked:ring-accent-400/30 peer-checked:bg-accent-50/70 dark:peer-checked:bg-zinc-900">
+              <svg class="pointer-events-none absolute -bottom-2 -right-2 w-14 h-14 text-zinc-100 dark:text-zinc-800/70" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                <rect x="4" y="4" width="40" height="40" rx="12" stroke="currentColor" stroke-width="2" />
+                <circle cx="18" cy="18" r="6" stroke="currentColor" stroke-width="2" />
+                <circle cx="32" cy="30" r="4.5" stroke="currentColor" stroke-width="2" />
+              </svg>
               <span class="font-semibold text-zinc-900 dark:text-white">{{ label }}</span>
               <span class="block text-xs text-zinc-400 dark:text-zinc-500 mt-1">{{ subtitle }}</span>
             </div>
+            <span class="hidden peer-checked:flex absolute top-2.5 right-2.5 items-center justify-center w-5 h-5 rounded-md bg-accent-500 dark:bg-accent-400 text-white dark:text-zinc-950 shadow-sm">
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+            </span>
           </label>
           {% endfor %}
-          <label class="block cursor-pointer">
+          <label class="group/card relative block cursor-pointer">
             <input class="peer sr-only" type="radio" name="bh_min" value="" {% if not selected_bh %}checked{% endif %}>
-            <div class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-3.5 transition-colors hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 peer-checked:bg-accent-50 peer-checked:ring-2 peer-checked:ring-accent-500/20 dark:peer-checked:bg-accent-950/40 dark:peer-checked:border-accent-400">
+            <div class="relative overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800/90 bg-white dark:bg-zinc-900/70 px-4 py-3.5 transition-all hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 dark:peer-checked:border-accent-400/80 peer-checked:ring-1 peer-checked:ring-accent-500/40 dark:peer-checked:ring-accent-400/30 peer-checked:bg-accent-50/70 dark:peer-checked:bg-zinc-900">
+              <svg class="pointer-events-none absolute -bottom-2 -right-2 w-14 h-14 text-zinc-100 dark:text-zinc-800/70" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                <rect x="4" y="4" width="40" height="40" rx="12" stroke="currentColor" stroke-width="2" />
+                <circle cx="18" cy="18" r="6" stroke="currentColor" stroke-width="2" />
+                <circle cx="32" cy="30" r="4.5" stroke="currentColor" stroke-width="2" />
+              </svg>
               <span class="font-semibold text-zinc-900 dark:text-white">Tidak masalah</span>
               <span class="block text-xs text-zinc-400 dark:text-zinc-500 mt-1">Prioritaskan faktor lain</span>
             </div>
+            <span class="hidden peer-checked:flex absolute top-2.5 right-2.5 items-center justify-center w-5 h-5 rounded-md bg-accent-500 dark:bg-accent-400 text-white dark:text-zinc-950 shadow-sm">
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+            </span>
           </label>
         </div>
         <p class="text-xs text-zinc-400 dark:text-zinc-600 mt-4">
@@ -161,20 +261,40 @@
         <p class="text-zinc-500 dark:text-zinc-400 mb-6">Pilih standar kondisi fisik minimum yang kamu terima.</p>
         <div class="grid grid-cols-2 gap-3">
           {% for value, label, subtitle in kondisi_options %}
-          <label class="block cursor-pointer">
+          <label class="group/card relative block cursor-pointer">
             <input class="peer sr-only" type="radio" name="kondisi_min" value="{{ value }}" {% if selected_kondisi == value %}checked{% endif %}>
-            <div class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-3.5 transition-colors hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 peer-checked:bg-accent-50 peer-checked:ring-2 peer-checked:ring-accent-500/20 dark:peer-checked:bg-accent-950/40 dark:peer-checked:border-accent-400">
+            <div class="relative overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800/90 bg-white dark:bg-zinc-900/70 px-4 py-3.5 transition-all hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 dark:peer-checked:border-accent-400/80 peer-checked:ring-1 peer-checked:ring-accent-500/40 dark:peer-checked:ring-accent-400/30 peer-checked:bg-accent-50/70 dark:peer-checked:bg-zinc-900">
+              <svg class="pointer-events-none absolute -bottom-2 -right-2 w-14 h-14 text-zinc-100 dark:text-zinc-800/70" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                <rect x="4" y="4" width="40" height="40" rx="12" stroke="currentColor" stroke-width="2" />
+                <circle cx="18" cy="18" r="6" stroke="currentColor" stroke-width="2" />
+                <circle cx="32" cy="30" r="4.5" stroke="currentColor" stroke-width="2" />
+              </svg>
               <span class="font-semibold text-zinc-900 dark:text-white">{{ label }}</span>
               <span class="block text-xs text-zinc-400 dark:text-zinc-500 mt-1">{{ subtitle }}</span>
             </div>
+            <span class="hidden peer-checked:flex absolute top-2.5 right-2.5 items-center justify-center w-5 h-5 rounded-md bg-accent-500 dark:bg-accent-400 text-white dark:text-zinc-950 shadow-sm">
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+            </span>
           </label>
           {% endfor %}
-          <label class="block cursor-pointer">
+          <label class="group/card relative block cursor-pointer">
             <input class="peer sr-only" type="radio" name="kondisi_min" value="" {% if not selected_kondisi %}checked{% endif %}>
-            <div class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-3.5 transition-colors hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 peer-checked:bg-accent-50 peer-checked:ring-2 peer-checked:ring-accent-500/20 dark:peer-checked:bg-accent-950/40 dark:peer-checked:border-accent-400">
+            <div class="relative overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800/90 bg-white dark:bg-zinc-900/70 px-4 py-3.5 transition-all hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 dark:peer-checked:border-accent-400/80 peer-checked:ring-1 peer-checked:ring-accent-500/40 dark:peer-checked:ring-accent-400/30 peer-checked:bg-accent-50/70 dark:peer-checked:bg-zinc-900">
+              <svg class="pointer-events-none absolute -bottom-2 -right-2 w-14 h-14 text-zinc-100 dark:text-zinc-800/70" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                <rect x="4" y="4" width="40" height="40" rx="12" stroke="currentColor" stroke-width="2" />
+                <circle cx="18" cy="18" r="6" stroke="currentColor" stroke-width="2" />
+                <circle cx="32" cy="30" r="4.5" stroke="currentColor" stroke-width="2" />
+              </svg>
               <span class="font-semibold text-zinc-900 dark:text-white">Tidak masalah</span>
               <span class="block text-xs text-zinc-400 dark:text-zinc-500 mt-1">Prioritaskan spesifikasi & harga</span>
             </div>
+            <span class="hidden peer-checked:flex absolute top-2.5 right-2.5 items-center justify-center w-5 h-5 rounded-md bg-accent-500 dark:bg-accent-400 text-white dark:text-zinc-950 shadow-sm">
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+            </span>
           </label>
         </div>
       </div>
@@ -185,20 +305,40 @@
         <p class="text-zinc-500 dark:text-zinc-400 mb-6">Pilih status garansi yang kamu inginkan.</p>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {% for value, label, subtitle in garansi_options %}
-          <label class="block cursor-pointer">
+          <label class="group/card relative block cursor-pointer">
             <input class="peer sr-only" type="radio" name="garansi" value="{{ value }}" {% if selected_garansi == value %}checked{% endif %}>
-            <div class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-3.5 transition-colors hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 peer-checked:bg-accent-50 peer-checked:ring-2 peer-checked:ring-accent-500/20 dark:peer-checked:bg-accent-950/40 dark:peer-checked:border-accent-400">
+            <div class="relative overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800/90 bg-white dark:bg-zinc-900/70 px-4 py-3.5 transition-all hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 dark:peer-checked:border-accent-400/80 peer-checked:ring-1 peer-checked:ring-accent-500/40 dark:peer-checked:ring-accent-400/30 peer-checked:bg-accent-50/70 dark:peer-checked:bg-zinc-900">
+              <svg class="pointer-events-none absolute -bottom-2 -right-2 w-14 h-14 text-zinc-100 dark:text-zinc-800/70" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                <rect x="4" y="4" width="40" height="40" rx="12" stroke="currentColor" stroke-width="2" />
+                <circle cx="18" cy="18" r="6" stroke="currentColor" stroke-width="2" />
+                <circle cx="32" cy="30" r="4.5" stroke="currentColor" stroke-width="2" />
+              </svg>
               <span class="font-semibold text-zinc-900 dark:text-white">{{ label }}</span>
               <span class="block text-xs text-zinc-400 dark:text-zinc-500 mt-1">{{ subtitle }}</span>
             </div>
+            <span class="hidden peer-checked:flex absolute top-2.5 right-2.5 items-center justify-center w-5 h-5 rounded-md bg-accent-500 dark:bg-accent-400 text-white dark:text-zinc-950 shadow-sm">
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+            </span>
           </label>
           {% endfor %}
-          <label class="block cursor-pointer">
+          <label class="group/card relative block cursor-pointer">
             <input class="peer sr-only" type="radio" name="garansi" value="" {% if not selected_garansi %}checked{% endif %}>
-            <div class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-3.5 transition-colors hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 peer-checked:bg-accent-50 peer-checked:ring-2 peer-checked:ring-accent-500/20 dark:peer-checked:bg-accent-950/40 dark:peer-checked:border-accent-400">
+            <div class="relative overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800/90 bg-white dark:bg-zinc-900/70 px-4 py-3.5 transition-all hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 dark:peer-checked:border-accent-400/80 peer-checked:ring-1 peer-checked:ring-accent-500/40 dark:peer-checked:ring-accent-400/30 peer-checked:bg-accent-50/70 dark:peer-checked:bg-zinc-900">
+              <svg class="pointer-events-none absolute -bottom-2 -right-2 w-14 h-14 text-zinc-100 dark:text-zinc-800/70" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                <rect x="4" y="4" width="40" height="40" rx="12" stroke="currentColor" stroke-width="2" />
+                <circle cx="18" cy="18" r="6" stroke="currentColor" stroke-width="2" />
+                <circle cx="32" cy="30" r="4.5" stroke="currentColor" stroke-width="2" />
+              </svg>
               <span class="font-semibold text-zinc-900 dark:text-white">Tidak masalah</span>
               <span class="block text-xs text-zinc-400 dark:text-zinc-500 mt-1">Tampilkan semua pilihan garansi</span>
             </div>
+            <span class="hidden peer-checked:flex absolute top-2.5 right-2.5 items-center justify-center w-5 h-5 rounded-md bg-accent-500 dark:bg-accent-400 text-white dark:text-zinc-950 shadow-sm">
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+            </span>
           </label>
         </div>
       </div>
@@ -209,20 +349,40 @@
         <p class="text-zinc-500 dark:text-zinc-400 mb-6">Pilih satu faktor utama — AI akan menimbang faktor ini lebih besar dibanding lainnya saat menyusun rekomendasi.</p>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {% for value, label, subtitle in priority_options %}
-          <label class="block cursor-pointer">
+          <label class="group/card relative block cursor-pointer">
             <input class="peer sr-only" type="radio" name="priority" value="{{ value }}" {% if selected_priority == value %}checked{% endif %}>
-            <div class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-3.5 transition-colors hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 peer-checked:bg-accent-50 peer-checked:ring-2 peer-checked:ring-accent-500/20 dark:peer-checked:bg-accent-950/40 dark:peer-checked:border-accent-400">
+            <div class="relative overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800/90 bg-white dark:bg-zinc-900/70 px-4 py-3.5 transition-all hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 dark:peer-checked:border-accent-400/80 peer-checked:ring-1 peer-checked:ring-accent-500/40 dark:peer-checked:ring-accent-400/30 peer-checked:bg-accent-50/70 dark:peer-checked:bg-zinc-900">
+              <svg class="pointer-events-none absolute -bottom-2 -right-2 w-14 h-14 text-zinc-100 dark:text-zinc-800/70" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                <rect x="4" y="4" width="40" height="40" rx="12" stroke="currentColor" stroke-width="2" />
+                <circle cx="18" cy="18" r="6" stroke="currentColor" stroke-width="2" />
+                <circle cx="32" cy="30" r="4.5" stroke="currentColor" stroke-width="2" />
+              </svg>
               <span class="font-semibold text-zinc-900 dark:text-white">{{ label }}</span>
               <span class="block text-xs text-zinc-400 dark:text-zinc-500 mt-1">{{ subtitle }}</span>
             </div>
+            <span class="hidden peer-checked:flex absolute top-2.5 right-2.5 items-center justify-center w-5 h-5 rounded-md bg-accent-500 dark:bg-accent-400 text-white dark:text-zinc-950 shadow-sm">
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+            </span>
           </label>
           {% endfor %}
-          <label class="block cursor-pointer sm:col-span-2">
+          <label class="group/card relative block cursor-pointer sm:col-span-2">
             <input class="peer sr-only" type="radio" name="priority" value="" {% if not selected_priority %}checked{% endif %}>
-            <div class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-3.5 transition-colors hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 peer-checked:bg-accent-50 peer-checked:ring-2 peer-checked:ring-accent-500/20 dark:peer-checked:bg-accent-950/40 dark:peer-checked:border-accent-400">
+            <div class="relative overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800/90 bg-white dark:bg-zinc-900/70 px-4 py-3.5 transition-all hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 dark:peer-checked:border-accent-400/80 peer-checked:ring-1 peer-checked:ring-accent-500/40 dark:peer-checked:ring-accent-400/30 peer-checked:bg-accent-50/70 dark:peer-checked:bg-zinc-900">
+              <svg class="pointer-events-none absolute -bottom-2 -right-2 w-14 h-14 text-zinc-100 dark:text-zinc-800/70" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                <rect x="4" y="4" width="40" height="40" rx="12" stroke="currentColor" stroke-width="2" />
+                <circle cx="18" cy="18" r="6" stroke="currentColor" stroke-width="2" />
+                <circle cx="32" cy="30" r="4.5" stroke="currentColor" stroke-width="2" />
+              </svg>
               <span class="font-semibold text-zinc-900 dark:text-white">Semua faktor sama penting</span>
               <span class="block text-xs text-zinc-400 dark:text-zinc-500 mt-1">Gunakan bobot seimbang seperti biasa</span>
             </div>
+            <span class="hidden peer-checked:flex absolute top-2.5 right-2.5 items-center justify-center w-5 h-5 rounded-md bg-accent-500 dark:bg-accent-400 text-white dark:text-zinc-950 shadow-sm">
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+            </span>
           </label>
         </div>
       </div>
@@ -231,7 +391,7 @@
       <div>
         <h1 class="font-display text-2xl font-bold text-zinc-900 dark:text-white mb-2">Ini preferensi kamu — sudah sesuai?</h1>
         <p class="text-zinc-500 dark:text-zinc-400 mb-6">Pastikan preferensi di bawah ini sudah sesuai sebelum kami mencarikan rekomendasi.</p>
-        <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl divide-y divide-zinc-100 dark:divide-zinc-800">
+        <div class="bg-white dark:bg-zinc-900/70 border border-zinc-200 dark:border-zinc-800/90 rounded-2xl divide-y divide-zinc-100 dark:divide-zinc-800">
           {% for label, value in summary.items %}
           <div class="flex justify-between px-6 py-4">
             <span class="text-zinc-500 dark:text-zinc-400">{{ label }}</span>
@@ -251,8 +411,10 @@
         <span></span>
       {% endif %}
 
-      <button type="submit" class="bg-accent-600 hover:bg-accent-700 text-white font-semibold px-8 py-3 rounded-full shadow-sm shadow-accent-600/20 transition-colors">
-        {% if step == 9 %}Cari Rekomendasi Terbaik &rarr;{% else %}Lanjut &rarr;{% endif %}
+      <button type="submit" class="group/cta bg-accent-600 hover:bg-accent-700 dark:bg-accent-500 dark:hover:bg-accent-400 text-white dark:text-zinc-950 font-semibold px-8 py-3.5 rounded-full shadow-sm shadow-accent-600/20 dark:shadow-accent-400/20 hover:shadow-xl hover:shadow-accent-500/40 hover:scale-105 transition-all duration-300 ease-out">
+        <span class="inline-block transition-transform duration-300 ease-out group-hover/cta:translate-x-1">
+          {% if step == 9 %}Cari Rekomendasi Terbaik &rarr;{% else %}Lanjut &rarr;{% endif %}
+        </span>
       </button>
     </div>
   </form>
