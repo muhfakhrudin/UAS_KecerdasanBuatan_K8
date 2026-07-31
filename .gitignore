@@ -13,6 +13,9 @@ db.sqlite3
 db.sqlite3-journal
 .env
 
+# Collected static files (regenerated on every deploy)
+staticfiles/
+
 # Logs & Debug
 *.log
 logs/
