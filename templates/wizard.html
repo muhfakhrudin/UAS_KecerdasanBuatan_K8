@@ -211,7 +211,7 @@
       <div>
         <h1 class="font-display text-2xl font-bold text-zinc-900 dark:text-white mb-2">Berapa battery health minimum yang kamu terima?</h1>
         <p class="text-zinc-500 dark:text-zinc-400 mb-6">Listing dengan BH di bawah angka ini tidak akan ditampilkan.</p>
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {% for value, label, subtitle in bh_options %}
           <label class="group/card relative block cursor-pointer">
             <input class="peer sr-only" type="radio" name="bh_min" value="{{ value }}" {% if selected_bh == value %}checked{% endif %}>
@@ -259,7 +259,7 @@
       <div>
         <h1 class="font-display text-2xl font-bold text-zinc-900 dark:text-white mb-2">Kondisi fisik seperti apa yang kamu harapkan?</h1>
         <p class="text-zinc-500 dark:text-zinc-400 mb-6">Pilih standar kondisi fisik minimum yang kamu terima.</p>
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {% for value, label, subtitle in kondisi_options %}
           <label class="group/card relative block cursor-pointer">
             <input class="peer sr-only" type="radio" name="kondisi_min" value="{{ value }}" {% if selected_kondisi == value %}checked{% endif %}>
@@ -402,16 +402,14 @@
       </div>
     {% endif %}
 
-    <div class="flex items-center justify-between pt-4">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-4">
       {% if step > 1 %}
-        <a href="{% url 'wizard_step' step=prev_step %}" class="text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-100 font-medium px-6 py-3 transition-colors">
+        <a href="{% url 'wizard_step' step=prev_step %}" class="order-2 sm:order-1 text-center sm:text-left text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-100 font-medium px-6 py-3 transition-colors">
           &larr; {% if step == 9 %}Ubah Preferensi{% else %}Kembali{% endif %}
         </a>
-      {% else %}
-        <span></span>
       {% endif %}
 
-      <button type="submit" class="group/cta bg-accent-600 hover:bg-accent-700 dark:bg-accent-500 dark:hover:bg-accent-400 text-white dark:text-zinc-950 font-semibold px-8 py-3.5 rounded-full shadow-sm shadow-accent-600/20 dark:shadow-accent-400/20 hover:shadow-xl hover:shadow-accent-500/40 hover:scale-105 transition-all duration-300 ease-out">
+      <button type="submit" class="group/cta order-1 sm:order-2 w-full sm:w-auto bg-accent-600 hover:bg-accent-700 dark:bg-accent-500 dark:hover:bg-accent-400 text-white dark:text-zinc-950 font-semibold px-8 py-3.5 rounded-full shadow-sm shadow-accent-600/20 dark:shadow-accent-400/20 hover:shadow-xl hover:shadow-accent-500/40 sm:hover:scale-105 transition-all duration-300 ease-out text-center">
         <span class="inline-block transition-transform duration-300 ease-out group-hover/cta:translate-x-1">
           {% if step == 9 %}Cari Rekomendasi Terbaik &rarr;{% else %}Lanjut &rarr;{% endif %}
         </span>
