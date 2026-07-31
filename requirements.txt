@@ -1,4 +1,4 @@
-django>=5.0
+django>=6.0,<7.0
 scikit-learn>=1.4
 rank-bm25>=0.2.2
 nltk>=3.8
