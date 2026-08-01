@@ -95,17 +95,31 @@ PRIORITY_OPTIONS = [
 PRIORITY_LABEL = {value: label for value, label, _ in PRIORITY_OPTIONS}
 
 # Label untuk pesan relaksasi filter di halaman hasil (lihat engine.recommender
-# RELAXATION_STAGES) -- sengaja tidak mencakup seri/varian/harga karena field
-# itu tidak pernah dilonggarkan otomatis oleh engine.
+# RELAXATION_STAGES). Rekomendasi kosong dianggap lebih buruk daripada
+# rekomendasi yang meleset dari sebagian kriteria, jadi engine akan melonggarkan
+# apa pun (termasuk seri/varian/harga) sampai dapat hasil -- selama itu
+# dilaporkan jujur ke user lewat pesan ini, bukan diam-diam diganti.
 RELAXED_FIELD_LABELS = {
     'kondisi_min': 'kondisi fisik',
     'garansi': 'status garansi',
     'bh_min': 'battery health minimum',
     'storage_min': 'kapasitas penyimpanan',
+    'harga': 'rentang harga',
+    'varian': 'varian model',
+    'seri': 'seri iPhone',
 }
 
 
 def _relaxed_message(relaxed_fields):
+    if not relaxed_fields:
+        return None
+
+    if relaxed_fields == ['all']:
+        return (
+            'Tidak ada produk yang cocok dengan kriteria manapun yang kamu pilih. '
+            'Berikut rekomendasi terbaik dari seluruh katalog kami sebagai alternatif.'
+        )
+
     labels = [RELAXED_FIELD_LABELS[f] for f in relaxed_fields if f in RELAXED_FIELD_LABELS]
     if not labels:
         return None

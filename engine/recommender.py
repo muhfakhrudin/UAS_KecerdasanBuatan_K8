@@ -122,35 +122,57 @@ def _apply_hard_filters(queryset, session_data: dict):
 
 
 # Urutan relaksasi bertahap saat filter penuh tidak menghasilkan kandidat.
-# Setiap tahap menambah field yang dilonggarkan dari tahap sebelumnya, dari
-# yang paling "boleh dikompromikan" ke yang paling ketat:
+# Sebuah rekomendasi kosong lebih buruk daripada rekomendasi yang meleset
+# dari sebagian kriteria -- terutama di pameran, pengunjung mengharapkan
+# selalu ada sesuatu untuk dilihat. Jadi tiap tahap melonggarkan lebih
+# banyak field, dari yang paling "boleh dikompromikan" ke yang paling inti:
 #   1. kondisi & garansi -- cuma soal toleransi risiko pembeli
 #   2. + battery health minimum -- sinyal kualitas tambahan, bukan kebutuhan pasti
 #   3. + kapasitas storage -- kebutuhan riil, tapi masih bisa dikompromikan
-# seri, varian, dan harga SENGAJA tidak pernah dilonggarkan otomatis --
-# itu identitas produk & budget yang eksplisit dipilih user; mengganti itu
-# diam-diam lebih membingungkan daripada menunjukkan hasil kosong.
+#   4. + rentang harga -- budget masih bisa direntangkan demi dapat unit yang pas
+#   5. + varian model -- preferensi Pro/reguler/dst., bukan penentu utama
+#   6. + seri -- identitas produk yang dipilih pertama kali di step 1, jadi
+#      paling terakhir dilonggarkan
+# Field yang dilonggarkan selalu dilaporkan balik ke UI (lihat
+# core.views._relaxed_message) supaya user tetap tahu persis kriteria mana
+# yang tidak terpenuhi, bukan diam-diam diganti.
 RELAXATION_STAGES = [
     [],
     ['kondisi_min', 'garansi'],
     ['kondisi_min', 'garansi', 'bh_min'],
     ['kondisi_min', 'garansi', 'bh_min', 'storage_min'],
+    ['kondisi_min', 'garansi', 'bh_min', 'storage_min', 'harga'],
+    ['kondisi_min', 'garansi', 'bh_min', 'storage_min', 'harga', 'varian'],
+    ['kondisi_min', 'garansi', 'bh_min', 'storage_min', 'harga', 'varian', 'seri'],
 ]
+
+# 'harga' adalah nama gabungan untuk dua field session_data sekaligus.
+RELAXATION_FIELD_KEYS = {
+    'harga': ['harga_min', 'harga_max'],
+}
 
 
 def _filtered_listings(session_data: dict):
     """Return (listings, relaxed_fields). relaxed_fields berisi nama field yang
     benar-benar dilonggarkan untuk mendapatkan listings -- kosong kalau filter
-    penuh sudah cukup, atau kalau relaksasi bertahap tetap tidak menghasilkan
-    apa-apa (supaya UI tidak mengklaim "menampilkan hasil terdekat" padahal
-    hasilnya kosong)."""
+    penuh sudah cukup.
+
+    Kalau bahkan setelah seluruh tahap relaksasi masih kosong (mis. free-text
+    query menyisipkan batas harga yang mustahil dipenuhi listing manapun),
+    jatuhkan semua filter sama sekali dan tampilkan katalog apa adanya --
+    selama IphoneListing punya baris sama sekali, hasil TIDAK PERNAH kosong.
+    """
     for fields_to_drop in RELAXATION_STAGES:
-        trial_data = dict(session_data, **{field: None for field in fields_to_drop})
+        trial_data = dict(session_data)
+        for field in fields_to_drop:
+            for key in RELAXATION_FIELD_KEYS.get(field, [field]):
+                trial_data[key] = None
         listings = list(_apply_hard_filters(IphoneListing.objects.all(), trial_data))
         if listings:
             return listings, fields_to_drop
 
-    return [], []
+    all_listings = list(IphoneListing.objects.all())
+    return all_listings, ['all'] if all_listings else []
 
 
 BM25_WEIGHT = 0.55
