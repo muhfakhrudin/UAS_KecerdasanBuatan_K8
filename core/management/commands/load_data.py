@@ -100,6 +100,19 @@ class Command(BaseCommand):
 
         self.stdout.write(f'Membaca {len(df)} baris dari {file_path}...')
 
+        # --- Filter toko terpercaya ---
+        # Hanya pertahankan listing dari toko yang sudah punya rating (>0) dan
+        # sudah pernah terjual (>0). Listing tanpa rating/penjualan tidak punya
+        # sinyal kepercayaan sama sekali sehingga dibuang sebelum listing lain
+        # dihitung statistiknya (median BH, normalisasi trust_score, dst).
+        before = len(df)
+        df = df[(df['Rating Produk'] > 0) & (df['Produk Terjual'] > 0)].reset_index(drop=True)
+        dropped = before - len(df)
+        self.stdout.write(
+            f'Membuang {dropped} baris dari toko tidak terpercaya (tanpa rating/penjualan). '
+            f'Tersisa {len(df)} baris.'
+        )
+
         # --- Preprocessing dasar ---
         df['harga_int'] = df['Harga'].apply(parse_harga)
 
