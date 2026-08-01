@@ -399,6 +399,23 @@
           </div>
           {% endfor %}
         </div>
+
+        <div class="mt-6">
+          <label for="query" class="block font-semibold text-zinc-900 dark:text-white mb-1.5">
+            Ada kata kunci spesifik yang penting buat kamu? <span class="font-normal text-zinc-400 dark:text-zinc-500">(opsional)</span>
+          </label>
+          <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-3">
+            Mis. "kamera bagus buat konten", "baterai awet dipakai seharian", atau "budget di bawah 6 juta". AI akan mencocokkan kata kunci ini dengan deskripsi listing untuk mempertajam urutan rekomendasi.
+          </p>
+          <input
+            type="text"
+            id="query"
+            name="query"
+            value="{{ query }}"
+            placeholder="Contoh: kamera bagus buat konten"
+            class="w-full rounded-xl border border-zinc-200 dark:border-zinc-800/90 bg-white dark:bg-zinc-900/70 px-4 py-3 text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-accent-500 focus:border-accent-500 transition-colors"
+          >
+        </div>
       </div>
     {% endif %}
 

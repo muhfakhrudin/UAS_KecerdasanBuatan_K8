@@ -181,7 +181,9 @@ def _save_step(request, step, wizard_data):
 
     elif step == 8:
         wizard_data['priority'] = request.POST.get('priority') or None
-    # step 9 = halaman konfirmasi, tidak ada input baru untuk disimpan
+
+    elif step == 9:
+        wizard_data['query'] = request.POST.get('query', '').strip()
 
 
 def _build_step_context(step, wizard_data):
@@ -220,6 +222,7 @@ def _build_step_context(step, wizard_data):
         context['selected_priority'] = wizard_data.get('priority')
     elif step == 9:
         context['summary'] = _build_summary(wizard_data)
+        context['query'] = wizard_data.get('query', '')
 
     return context
 
@@ -262,6 +265,7 @@ def _run_engine_and_redirect(request, wizard_data):
         'kondisi_min': wizard_data.get('kondisi_min'),
         'garansi': wizard_data.get('garansi'),
         'priority': wizard_data.get('priority'),
+        'query': wizard_data.get('query', ''),
     }
 
     outcome = get_recommendations_detailed(session_data)
@@ -307,6 +311,8 @@ def result(request):
             'listing': listing,
             'harga_str': harga_str,
             'bh_rounded': bh_rounded,
+            'bm25_percent': round(meta.get('bm25_score', 0) * 100),
+            'value_percent': round(meta.get('value_score', 0) * 100),
             **meta,
         })
 

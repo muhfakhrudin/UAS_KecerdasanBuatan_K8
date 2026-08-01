@@ -77,6 +77,12 @@
           <span class="text-lg font-extrabold text-accent-700 dark:text-accent-400">{{ rec.match_percent }}% cocok</span>
         </div>
         <p class="text-sm text-zinc-600 dark:text-zinc-300">{{ rec.reason }}</p>
+        {% if rec.bm25_percent > 0 %}
+        <div class="flex items-center justify-between text-xs text-accent-700/80 dark:text-accent-400/80 mt-2 pt-2 border-t border-accent-100 dark:border-accent-900/40">
+          <span>Relevansi kata kunci (BM25): {{ rec.bm25_percent }}%</span>
+          <span>Kecocokan preferensi: {{ rec.value_percent }}%</span>
+        </div>
+        {% endif %}
       </div>
 
       <a
