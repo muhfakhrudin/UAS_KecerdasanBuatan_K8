@@ -110,7 +110,10 @@ def _apply_hard_filters(queryset, session_data: dict):
     if harga_min:
         queryset = queryset.filter(harga__gte=harga_min)
 
-    harga_max = session_data.get('harga_max') or extract_price_ceiling(session_data.get('query', ''))
+    harga_max = session_data.get('harga_max')
+    query_ceiling = extract_price_ceiling(session_data.get('query', ''))
+    if query_ceiling and (not harga_max or query_ceiling < harga_max):
+        harga_max = query_ceiling
     if harga_max:
         queryset = queryset.filter(harga__lte=harga_max)
 

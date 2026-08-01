@@ -206,7 +206,18 @@ def _build_step_context(step, wizard_data):
         context['selected_varian'] = selected_varian if selected_varian not in unavailable_varian else None
         context['relaxed_msg'] = wizard_data.get('varian_relaxed_msg')
     elif step == 3:
-        context['harga_options'] = HARGA_OPTIONS
+        # Subtitle "iPhone 11 Pro / 12 standar" dkk. hanya relevan sebagai
+        # saran model saat user belum memilih seri spesifik (step 1 = "Semua
+        # Seri"). Kalau seri sudah dipilih, tampilkan subtitle netral supaya
+        # tidak menyaran model lain yang bertentangan dengan pilihan step 1.
+        if wizard_data.get('seri'):
+            harga_options = [
+                (key, label, 'Berlaku untuk seri yang sudah kamu pilih', lo, hi)
+                for key, label, _, lo, hi in HARGA_OPTIONS
+            ]
+        else:
+            harga_options = HARGA_OPTIONS
+        context['harga_options'] = harga_options
         context['selected_harga'] = wizard_data.get('harga_key')
         context['harga_any_key'] = HARGA_ANY_KEY
     elif step == 4:

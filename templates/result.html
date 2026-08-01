@@ -46,13 +46,18 @@
       <div class="space-y-2 text-sm mb-4">
         <div class="flex justify-between items-center">
           <span class="text-zinc-500 dark:text-zinc-400">Battery Health</span>
-          {% if rec.bh_rounded >= 90 %}
-            <span class="font-semibold text-emerald-600 dark:text-emerald-400">{{ rec.bh_rounded }}%</span>
-          {% elif rec.bh_rounded >= 80 %}
-            <span class="font-semibold text-amber-600 dark:text-amber-400">{{ rec.bh_rounded }}%</span>
-          {% else %}
-            <span class="font-semibold text-red-600 dark:text-red-400">{{ rec.bh_rounded }}%</span>
-          {% endif %}
+          <span class="flex items-center gap-1.5">
+            {% if rec.bh_rounded >= 90 %}
+              <span class="font-semibold text-emerald-600 dark:text-emerald-400">{{ rec.bh_rounded }}%</span>
+            {% elif rec.bh_rounded >= 80 %}
+              <span class="font-semibold text-amber-600 dark:text-amber-400">{{ rec.bh_rounded }}%</span>
+            {% else %}
+              <span class="font-semibold text-red-600 dark:text-red-400">{{ rec.bh_rounded }}%</span>
+            {% endif %}
+            {% if rec.listing.bh_imputed %}
+            <span class="text-[10px] font-medium text-zinc-400 dark:text-zinc-500" title="Penjual tidak mencantumkan battery health. Angka ini estimasi dari listing sejenis.">(estimasi)</span>
+            {% endif %}
+          </span>
         </div>
         <div class="flex justify-between items-center">
           <span class="text-zinc-500 dark:text-zinc-400">Kondisi</span>

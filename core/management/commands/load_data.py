@@ -167,9 +167,27 @@ class Command(BaseCommand):
         # --- Dokumen teks untuk BM25 ---
         def build_dokumen(row):
             bh = round(row['battery_health_final']) if pd.notna(row['battery_health_final']) else 'unknown'
+
+            # Sinonim tambahan berbasis spesifikasi asli Apple (bukan data
+            # karangan) supaya kata kunci bebas di wizard step terakhir bisa
+            # benar-benar mencocokkan listing, bukan cuma menerima input tanpa
+            # efek. Pro/Pro Max punya sistem kamera lebih tinggi (telephoto,
+            # ProRAW); Plus/Pro Max punya baterai fisik lebih besar; generasi
+            # baru & varian Pro pakai chipset lebih kencang.
+            extra_tokens = []
+            if row['varian_model'] in ('pro', 'pro_max'):
+                extra_tokens.append('kamera pro fotografi kualitas foto video profesional')
+            if row['varian_model'] in ('plus', 'pro_max'):
+                extra_tokens.append('baterai besar awet tahan lama')
+            if pd.notna(row['battery_health_final']) and row['battery_health_final'] >= 85:
+                extra_tokens.append('baterai awet tahan lama prima')
+            if row['generasi'] >= 13 or row['is_pro']:
+                extra_tokens.append('performa kencang cepat gaming smooth chipset processor')
+
             text = (
                 f"{row['Kategori Varian']} {row['penyimpanan_norm']} {row['kondisi']} "
-                f"battery health {bh} {row['Platform']} {row['Wilayah Toko']}"
+                f"battery health baterai {bh} {row['Platform']} {row['Wilayah Toko']} "
+                f"{' '.join(extra_tokens)}"
             )
             tokens = [t for t in text.lower().split() if t not in STOPWORDS_ID]
             return ' '.join(tokens)
