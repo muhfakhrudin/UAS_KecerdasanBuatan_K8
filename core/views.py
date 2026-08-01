@@ -293,15 +293,17 @@ def result(request):
     listings = {listing.id: listing for listing in IphoneListing.objects.filter(id__in=result_ids)}
 
     recommendations = []
-    for idx, lid in enumerate(result_ids, start=1):
+    rank = 0
+    for lid in result_ids:
         listing = listings.get(lid)
         if not listing:
             continue
+        rank += 1
         meta = result_meta.get(str(lid), {})
         harga_str = f'{listing.harga:,}'.replace(',', '.')
         bh_rounded = round(listing.battery_health) if listing.battery_health is not None else 0
         recommendations.append({
-            'rank': idx,
+            'rank': rank,
             'listing': listing,
             'harga_str': harga_str,
             'bh_rounded': bh_rounded,

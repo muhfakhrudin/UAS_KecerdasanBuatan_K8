@@ -7,7 +7,7 @@
 
   <div class="mb-10">
     <p class="text-accent-700 dark:text-accent-400 font-semibold text-sm uppercase tracking-wide mb-2">Hasil Rekomendasi</p>
-    <h1 class="font-display text-3xl font-bold text-zinc-900 dark:text-white mb-3">3 iPhone Terbaik Untukmu</h1>
+    <h1 class="font-display text-3xl font-bold text-zinc-900 dark:text-white mb-3">{{ recommendations|length }} iPhone Terbaik Untukmu</h1>
     <div class="flex flex-wrap gap-2 text-sm">
       {% for label, value in summary.items %}
       <span class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-full px-4 py-1.5 text-zinc-600 dark:text-zinc-300">
