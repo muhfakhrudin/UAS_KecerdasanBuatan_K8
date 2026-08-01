@@ -198,8 +198,12 @@ def _build_step_context(step, wizard_data):
         context['seri_options'] = SERI_OPTIONS
         context['selected_seri'] = wizard_data.get('seri')
     elif step == 2:
+        seri = wizard_data.get('seri')
+        unavailable_varian = VARIAN_UNAVAILABLE.get(seri, set())
+        selected_varian = wizard_data.get('varian')
         context['varian_options'] = VARIAN_OPTIONS
-        context['selected_varian'] = wizard_data.get('varian')
+        context['unavailable_varian'] = unavailable_varian
+        context['selected_varian'] = selected_varian if selected_varian not in unavailable_varian else None
         context['relaxed_msg'] = wizard_data.get('varian_relaxed_msg')
     elif step == 3:
         context['harga_options'] = HARGA_OPTIONS

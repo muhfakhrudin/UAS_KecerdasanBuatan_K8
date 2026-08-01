@@ -81,6 +81,20 @@
         {% endif %}
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {% for value, label, subtitle in varian_options %}
+          {% if value in unavailable_varian %}
+          <div class="group/card relative block cursor-not-allowed" aria-disabled="true" title="{{ label }} tidak tersedia untuk seri ini">
+            <input class="peer sr-only" type="radio" name="varian" value="{{ value }}" disabled>
+            <div class="relative overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800/90 bg-zinc-50 dark:bg-zinc-900/30 px-4 py-3.5 opacity-40 grayscale">
+              <svg class="pointer-events-none absolute -bottom-2 -right-2 w-14 h-14 -z-10 text-zinc-100 dark:text-zinc-800/70" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                <rect x="4" y="4" width="40" height="40" rx="12" stroke="currentColor" stroke-width="2" />
+                <circle cx="18" cy="18" r="6" stroke="currentColor" stroke-width="2" />
+                <circle cx="32" cy="30" r="4.5" stroke="currentColor" stroke-width="2" />
+              </svg>
+              <span class="font-semibold text-zinc-900 dark:text-white">{{ label }}</span>
+              <span class="block text-xs text-zinc-400 dark:text-zinc-500 mt-1">Tidak tersedia untuk seri ini</span>
+            </div>
+          </div>
+          {% else %}
           <label class="group/card relative block cursor-pointer">
             <input class="peer sr-only" type="radio" name="varian" value="{{ value }}" {% if selected_varian == value %}checked{% endif %}>
             <div class="relative overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800/90 bg-white dark:bg-zinc-900/70 px-4 py-3.5 transition-all hover:border-zinc-300 dark:hover:border-zinc-700 peer-checked:border-accent-500 dark:peer-checked:border-accent-400/80 peer-checked:ring-1 peer-checked:ring-accent-500/40 dark:peer-checked:ring-accent-400/30 peer-checked:bg-accent-50/70 dark:peer-checked:bg-zinc-900">
@@ -98,6 +112,7 @@
               </svg>
             </span>
           </label>
+          {% endif %}
           {% endfor %}
           <label class="group/card relative block cursor-pointer">
             <input class="peer sr-only" type="radio" name="varian" value="" {% if not selected_varian %}checked{% endif %}>
