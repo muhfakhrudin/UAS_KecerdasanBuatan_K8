@@ -17,10 +17,9 @@
     </div>
   </div>
 
-  {% if relaxed %}
+  {% if relaxed_msg %}
   <div class="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300 text-sm rounded-xl px-4 py-3 mb-8">
-    Tidak ada produk yang memenuhi semua kriteria kamu. Kami merelaksasi filter kondisi dan
-    garansi untuk menampilkan hasil terdekat.
+    {{ relaxed_msg }}
   </div>
   {% endif %}
 

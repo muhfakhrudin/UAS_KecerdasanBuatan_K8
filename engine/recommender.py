@@ -25,6 +25,7 @@ from core.models import IphoneListing
 
 from .bm25_engine import BM25Engine
 from .intent_detector import detect_intent, extract_price_ceiling
+from .value_score import _harga_bounds, _normalize
 from .value_score import calculate as calculate_value_score
 
 KONDISI_ORDER = ['bekas', 'unknown', 'normal', 'mulus', 'like_new']
@@ -120,18 +121,36 @@ def _apply_hard_filters(queryset, session_data: dict):
     return queryset
 
 
-def _filtered_listings(session_data: dict):
-    """Return (listings, relaxed). Jika filter penuh menghasilkan corpus kosong,
-    relaksasi kondisi & garansi lalu coba lagi."""
-    listings = list(_apply_hard_filters(IphoneListing.objects.all(), session_data))
-    if listings:
-        return listings, False
+# Urutan relaksasi bertahap saat filter penuh tidak menghasilkan kandidat.
+# Setiap tahap menambah field yang dilonggarkan dari tahap sebelumnya, dari
+# yang paling "boleh dikompromikan" ke yang paling ketat:
+#   1. kondisi & garansi -- cuma soal toleransi risiko pembeli
+#   2. + battery health minimum -- sinyal kualitas tambahan, bukan kebutuhan pasti
+#   3. + kapasitas storage -- kebutuhan riil, tapi masih bisa dikompromikan
+# seri, varian, dan harga SENGAJA tidak pernah dilonggarkan otomatis --
+# itu identitas produk & budget yang eksplisit dipilih user; mengganti itu
+# diam-diam lebih membingungkan daripada menunjukkan hasil kosong.
+RELAXATION_STAGES = [
+    [],
+    ['kondisi_min', 'garansi'],
+    ['kondisi_min', 'garansi', 'bh_min'],
+    ['kondisi_min', 'garansi', 'bh_min', 'storage_min'],
+]
 
-    relaxed_data = dict(session_data)
-    relaxed_data['kondisi_min'] = None
-    relaxed_data['garansi'] = None
-    listings = list(_apply_hard_filters(IphoneListing.objects.all(), relaxed_data))
-    return listings, True
+
+def _filtered_listings(session_data: dict):
+    """Return (listings, relaxed_fields). relaxed_fields berisi nama field yang
+    benar-benar dilonggarkan untuk mendapatkan listings -- kosong kalau filter
+    penuh sudah cukup, atau kalau relaksasi bertahap tetap tidak menghasilkan
+    apa-apa (supaya UI tidak mengklaim "menampilkan hasil terdekat" padahal
+    hasilnya kosong)."""
+    for fields_to_drop in RELAXATION_STAGES:
+        trial_data = dict(session_data, **{field: None for field in fields_to_drop})
+        listings = list(_apply_hard_filters(IphoneListing.objects.all(), trial_data))
+        if listings:
+            return listings, fields_to_drop
+
+    return [], []
 
 
 BM25_WEIGHT = 0.55
@@ -173,7 +192,7 @@ def _score_and_rank(listings, session_data: dict) -> list:
             'value_score': round(value_score, 4),
             'final_score': round(final_score, 4),
             'match_percent': round(final_score * 100),
-            'reason': generate_reason(listing, weights),
+            'reason': generate_reason(listing, weights, session_data),
         })
 
     results.sort(key=lambda r: r['final_score'], reverse=True)
@@ -194,15 +213,15 @@ def get_recommendations_detailed(session_data: dict) -> dict:
         'kondisi_min': 'mulus',          # atau None
         'garansi': 'tidak_ada',          # atau None
     }
-    Return {'results': [...top 3...], 'relaxed': bool}
+    Return {'results': [...top 3...], 'relaxed': [nama field yang dilonggarkan]}
     """
     detect_intent(session_data.get('query', ''))  # sinyal intent (kompatibilitas alur lama)
 
-    listings, relaxed = _filtered_listings(session_data)
+    listings, relaxed_fields = _filtered_listings(session_data)
     if not listings:
-        return {'results': [], 'relaxed': relaxed}
+        return {'results': [], 'relaxed': relaxed_fields}
 
-    return {'results': _score_and_rank(listings, session_data), 'relaxed': relaxed}
+    return {'results': _score_and_rank(listings, session_data), 'relaxed': relaxed_fields}
 
 
 def get_recommendations(session_data: dict) -> list:
@@ -210,8 +229,17 @@ def get_recommendations(session_data: dict) -> list:
     return get_recommendations_detailed(session_data)['results']
 
 
-def generate_reason(listing, weights: dict) -> str:
-    """Generate kalimat penjelasan kenapa listing ini direkomendasikan."""
+def generate_reason(listing, weights: dict, session_data: dict) -> str:
+    """
+    Generate kalimat penjelasan kenapa listing ini direkomendasikan.
+
+    Dimensi dominan (bobot terbesar) hanya boleh dipuji ("terbaru", "value-for-money",
+    "terpercaya", dst.) kalau nilai ASLI listing di dimensi itu memang bagus --
+    kalau tidak, pakai kalimat netral yang tetap benar. Sebelumnya fungsi ini
+    memuji dimensi dominan tanpa mengecek nilainya sama sekali, sehingga iPhone
+    11 (generasi tertua di katalog) bisa disebut "generasi terbaru" hanya
+    karena prioritas user kebetulan jatuh ke 'gen'.
+    """
     if not weights or max(weights.values()) <= 0:
         dominant = 'bh'
     else:
@@ -225,19 +253,35 @@ def generate_reason(listing, weights: dict) -> str:
         return f'Battery health {bh}% tergolong {label} di kelasnya.'
 
     if dominant == 'gen':
-        return f'{listing.kategori_varian} adalah salah satu generasi terbaru pada hasil pencarianmu.'
+        if listing.generasi >= 13:
+            return f'{listing.kategori_varian} adalah salah satu generasi terbaru pada hasil pencarianmu.'
+        return (
+            f'{listing.kategori_varian} (generasi iPhone {listing.generasi}) dipilih berdasarkan '
+            f'kombinasi preferensi lain yang kamu tentukan.'
+        )
 
     if dominant == 'kondisi':
         kondisi_label = listing.kondisi.replace('_', ' ')
-        return f'Kondisi fisik "{kondisi_label}" sesuai dengan preferensimu.'
+        if session_data.get('kondisi_min'):
+            return f'Kondisi fisik "{kondisi_label}" sesuai dengan preferensimu.'
+        return f'Kondisi fisik "{kondisi_label}" tergolong baik di antara hasil pencarianmu.'
 
     if dominant == 'price':
-        return f'Harga {harga_str} tergolong value-for-money untuk spesifikasi yang didapat.'
+        lo, hi = _harga_bounds()
+        price_eff = 1.0 - _normalize(listing.harga, lo, hi)
+        if price_eff >= 0.5:
+            return f'Harga {harga_str} tergolong value-for-money untuk spesifikasi yang didapat.'
+        return f'Harga {harga_str} sesuai dengan rentang budget yang kamu tentukan.'
 
     if dominant == 'trust':
+        if listing.trust_score >= 0.6:
+            return (
+                f'Toko {listing.nama_toko} terpercaya dengan {listing.produk_terjual} produk terjual '
+                f'dan rating {listing.rating_produk:.1f}.'
+            )
         return (
-            f'Toko {listing.nama_toko} terpercaya dengan {listing.produk_terjual} produk terjual '
-            f'dan rating {listing.rating_produk:.1f}.'
+            f'Toko {listing.nama_toko} tercatat {listing.produk_terjual} produk terjual '
+            f'dengan rating {listing.rating_produk:.1f}.'
         )
 
     return 'Direkomendasikan berdasarkan kombinasi skor terbaik.'

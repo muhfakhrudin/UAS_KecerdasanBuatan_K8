@@ -65,10 +65,13 @@ class Command(BaseCommand):
                     'bh_min', 'kondisi_min', 'garansi', 'priority', 'query']:
             self.stdout.write(f'  {key:14s}: {session_data[key]!r}')
 
-        listings, relaxed = _filtered_listings(session_data)
+        listings, relaxed_fields = _filtered_listings(session_data)
         self.stdout.write('')
         self.stdout.write(self.style.MIGRATE_HEADING('=== 1. Hard Filter ==='))
-        self.stdout.write(f'Kandidat lolos: {len(listings)}' + (' (filter kondisi/garansi DIRELAKSASI karena hasil awal kosong)' if relaxed else ''))
+        self.stdout.write(
+            f'Kandidat lolos: {len(listings)}'
+            + (f' (filter {", ".join(relaxed_fields)} DIRELAKSASI karena hasil awal kosong)' if relaxed_fields else '')
+        )
         if not listings:
             self.stdout.write(self.style.ERROR('Tidak ada kandidat sama sekali, bahkan setelah relaksasi.'))
             return

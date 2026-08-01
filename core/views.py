@@ -94,9 +94,33 @@ PRIORITY_OPTIONS = [
 ]
 PRIORITY_LABEL = {value: label for value, label, _ in PRIORITY_OPTIONS}
 
+# Label untuk pesan relaksasi filter di halaman hasil (lihat engine.recommender
+# RELAXATION_STAGES) -- sengaja tidak mencakup seri/varian/harga karena field
+# itu tidak pernah dilonggarkan otomatis oleh engine.
+RELAXED_FIELD_LABELS = {
+    'kondisi_min': 'kondisi fisik',
+    'garansi': 'status garansi',
+    'bh_min': 'battery health minimum',
+    'storage_min': 'kapasitas penyimpanan',
+}
+
+
+def _relaxed_message(relaxed_fields):
+    labels = [RELAXED_FIELD_LABELS[f] for f in relaxed_fields if f in RELAXED_FIELD_LABELS]
+    if not labels:
+        return None
+    if len(labels) == 1:
+        joined = labels[0]
+    else:
+        joined = ', '.join(labels[:-1]) + f' dan {labels[-1]}'
+    return (
+        f'Tidak ada produk yang memenuhi semua kriteria kamu. '
+        f'Kami melonggarkan filter {joined} untuk menampilkan hasil terdekat.'
+    )
+
 
 def index(request):
-    return render(request, 'index.html')
+    return render(request, 'index.html', {'listing_count': IphoneListing.objects.count()})
 
 
 def wizard_start(request):
@@ -297,7 +321,7 @@ def _run_engine_and_redirect(request, wizard_data):
         for r in outcome['results']
     }
     request.session['wizard_summary'] = _build_summary(wizard_data)
-    request.session['wizard_relaxed'] = outcome['relaxed']
+    request.session['wizard_relaxed_msg'] = _relaxed_message(outcome['relaxed'])
     request.session.modified = True
 
     return redirect('result')
@@ -334,7 +358,7 @@ def result(request):
     context = {
         'recommendations': recommendations,
         'summary': request.session.get('wizard_summary', {}),
-        'relaxed': request.session.get('wizard_relaxed', False),
+        'relaxed_msg': request.session.get('wizard_relaxed_msg'),
     }
     return render(request, 'result.html', context)
 
